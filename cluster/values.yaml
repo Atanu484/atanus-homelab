@@ -17,9 +17,20 @@ repoServer:
     - name: repo-cache
       mountPath: /app/config/reposerver
 
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-repo-server
+              app.kubernetes.io/instance: argocd
+          topologyKey: kubernetes.io/hostname
+
 redis:
   enabled: true
   persistence:
     enabled: true
     size: 5Gi
     storageClass: longhorn
+
+
