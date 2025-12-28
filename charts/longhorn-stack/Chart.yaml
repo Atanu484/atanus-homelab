@@ -1,0 +1,10 @@
+apiVersion: v2
+name: longhorn-stack
+description: Wrapper chart to install Longhorn with required namespace PodSecurity labels and homelab-friendly defaults.
+type: application
+version: 0.1.0
+
+dependencies:
+  - name: longhorn
+    version: 1.10.1
+    repository: https://charts.longhorn.io

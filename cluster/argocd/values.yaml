@@ -1,0 +1,22 @@
+configs:
+  params:
+    server.insecure: "true"
+
+server:
+  service:
+    type: NodePort
+    nodePortHttp: 30083
+    nodePortHttps: 30445
+
+repoServer:
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+    storageClass: longhorn
+
+redis:
+  enabled: true
+  persistence:
+    enabled: true
+    size: 5Gi
+    storageClass: longhorn

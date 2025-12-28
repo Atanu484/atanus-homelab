@@ -1,0 +1,18 @@
+namespace:
+  name: longhorn-system
+  create: false
+
+  podSecurity:
+    enforce: privileged
+    audit: privileged
+    warn: privileged
+
+longhorn:
+  service:
+    ui:
+      type: NodePort
+      nodePort: 30082
+
+  persistence:
+    defaultClass: true
+    defaultClassReplicaCount: 1
