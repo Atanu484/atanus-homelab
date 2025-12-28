@@ -9,10 +9,13 @@ server:
     nodePortHttps: 30445
 
 repoServer:
-  persistentVolume:
-    enabled: true
-    size: 10Gi
-    storageClass: longhorn
+  volumes:
+    - name: repo-cache
+      persistentVolumeClaim:
+        claimName: argocd-repo-server-cache
+  volumeMounts:
+    - name: repo-cache
+      mountPath: /app/config/reposerver
 
 redis:
   enabled: true
