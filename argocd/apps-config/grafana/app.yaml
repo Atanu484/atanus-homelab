@@ -9,9 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Atanu484/atanus-homelab
     targetRevision: master
-    path: argocd/apps/grafana
-    helm:
-      releaseName: grafana
+    path: argocd/apps-config/grafana
 
   destination:
     server: https://kubernetes.default.svc
@@ -23,3 +21,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
