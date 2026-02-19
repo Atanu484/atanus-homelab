@@ -1,22 +1,26 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: longhorn
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/Atanu484/atanus-homelab
-    targetRevision: master
-    path: argocd/apps
+    repoURL: https://charts.longhorn.io
+    chart: longhorn
+    targetRevision: 1.7.2
+    helm:
+      releaseName: longhorn
+      values: |
+        ingress:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: longhorn-system
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
-
+      - ServerSideApply=true
