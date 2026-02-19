@@ -14,19 +14,20 @@ spec:
       values: |
         adminUser: admin
         adminPassword: "CHANGE-ME-STRONG-PASSWORD"
-
         service:
           type: NodePort
           nodePort: 30980
-
         persistence:
           enabled: true
+          type: pvc
+          storageClassName: longhorn
+          accessModes:
+            - ReadWriteOnce
           size: 10Gi
+          mountPath: /var/lib/grafana
+        initChownData:
+          enabled: true
 
-        # Optional: if you want Grafana to survive restarts with plugins, etc.
-        # (persistence above is usually enough)
-        # initChownData:
-        #   enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
