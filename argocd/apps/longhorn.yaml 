@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://charts.longhorn.io
     chart: longhorn
-    targetRevision: 1.11.0
+    targetRevision: 1.10.2
     helm:
       releaseName: longhorn
       values: |
@@ -20,6 +20,7 @@ spec:
             type: NodePort
             nodePort: 30808
 
+        # Required for Argo CD / GitOps installs
         preUpgradeChecker:
           jobEnabled: false
   destination:
@@ -32,5 +33,6 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+
 
 
