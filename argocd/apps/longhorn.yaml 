@@ -5,18 +5,27 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   source:
     repoURL: https://charts.longhorn.io
     chart: longhorn
-    targetRevision: 1.7.2
+    targetRevision: 1.11.0
     helm:
       releaseName: longhorn
       values: |
+        # No ingress needed
         ingress:
           enabled: false
+
+        service:
+          ui:
+            type: NodePort
+            nodePort: 30808
+
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
+
   syncPolicy:
     automated:
       prune: true
@@ -24,3 +33,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+
