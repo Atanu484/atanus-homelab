@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Atanu484/atanus-homelab
     targetRevision: master
-    path: argocd/registry
+    path: argocd
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
