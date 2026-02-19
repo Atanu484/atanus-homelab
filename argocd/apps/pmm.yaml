@@ -12,17 +12,29 @@ spec:
     helm:
       releaseName: pmm
       values: |
-        # Have the chart create the secret + set the initial admin password
         secret:
           create: true
         pmm:
           adminPassword: "CHANGE-ME-TO-A-STRONG-PASSWORD"
+          
+          # Give PMM explicit resources so it initializes faster
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+
+        # Tell Kubernetes to wait up to 15 minutes before killing the pod
+        probes:
+          startupProbe:
+            failureThreshold: 60
+            periodSeconds: 15
 
         service:
           type: NodePort
           nodePort: 30970
 
-        # Optional but common: persist data
         persistence:
           enabled: true
           size: 20Gi
