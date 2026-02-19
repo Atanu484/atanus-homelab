@@ -4,14 +4,15 @@ grafana:
     ingressClassName: nginx
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-      nginx.ingress.kubernetes.io/use-regex:
+      nginx.ingress.kubernetes.io/use-regex: "true"
     hosts:
+      - grafana.home.arpa
     path: /grafana/?(.*)
     pathType: ImplementationSpecific
 
   grafana.ini:
     server:
-      root_url: http://192.168.50.137:30081/grafana/
+      root_url: http://192.168.50.148:8080/grafana/
       serve_from_sub_path: true
     auth.anonymous:
       enabled: true
