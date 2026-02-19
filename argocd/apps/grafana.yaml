@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: grafana
+    targetRevision: 10.5.15
+    helm:
+      releaseName: grafana
+      values: |
+        adminUser: admin
+        adminPassword: "CHANGE-ME-STRONG-PASSWORD"
+
+        service:
+          type: NodePort
+          nodePort: 30980
+
+        persistence:
+          enabled: true
+          size: 10Gi
+
+        # Optional: if you want Grafana to survive restarts with plugins, etc.
+        # (persistence above is usually enough)
+        # initChownData:
+        #   enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
