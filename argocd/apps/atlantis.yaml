@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: atlantis
       values: |
-        orgAllowlist: "github.com/YOURORG/*"
+        orgAllowlist: "github.com/Atanu484/atanus-homelab"
 
         vcsSecretName: atlantis-vcs
 
