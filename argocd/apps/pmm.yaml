@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pmm
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://percona.github.io/percona-helm-charts
+    chart: pmm
+    targetRevision: 1.4.9
+    helm:
+      releaseName: pmm
+      values: |
+        # Have the chart create the secret + set the initial admin password
+        secret:
+          create: true
+        pmm:
+          adminPassword: "CHANGE-ME-TO-A-STRONG-PASSWORD"
+
+        service:
+          type: NodePort
+          nodePort: 30970
+
+        # Optional but common: persist data
+        persistence:
+          enabled: true
+          size: 20Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
