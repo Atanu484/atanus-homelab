@@ -20,6 +20,20 @@ spec:
           service:
             type: NodePort
             nodePort: 30900
+          prometheusSpec:
+            retention: 3d 
+            resources:
+              requests:
+                memory: 512Mi
+              limits:
+                memory: 2Gi
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
 
         alertmanager:
           service:
