@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vpa
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://charts.fairwinds.com/stable
+    chart: vpa
+    targetRevision: 1.1.0
+    helm:
+      releaseName: vpa
+      values: |
+        # Safe defaults for Goldilocks: recommender-only is usually enough.
+        # If your chart version enables more components by default, force-disable them:
+        updater:
+          enabled: false
+        admissionController:
+          enabled: false
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vpa
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
