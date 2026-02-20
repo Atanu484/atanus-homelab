@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: homepage
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/tracking-id: root-app:argoproj.io/Application:argocd/homepage
 spec:
   project: default
   source:
@@ -23,8 +25,6 @@ spec:
             storageClass: longhorn
             accessMode: ReadWriteOnce
             size: 2Gi
-
-        # You’ll edit config files inside the container or mount custom ones later
   destination:
     server: https://kubernetes.default.svc
     namespace: homepage
