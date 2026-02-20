@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://charts.fairwinds.com/stable
     chart: goldilocks
-    targetRevision: 2.3.3
+    targetRevision: 9.0.0
     helm:
       releaseName: goldilocks
       values: |
@@ -17,7 +17,6 @@ spec:
             type: NodePort
             port: 80
             nodePort: 31010
-
   destination:
     server: https://kubernetes.default.svc
     namespace: goldilocks
