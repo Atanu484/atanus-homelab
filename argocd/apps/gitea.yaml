@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitea
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://dl.gitea.com/charts/
+    chart: gitea
+    targetRevision: 10.4.1
+    helm:
+      releaseName: gitea
+      values: |
+        replicaCount: 1
+
+        service:
+          http:
+            type: NodePort
+            nodePort: 31080
+          ssh:
+            type: NodePort
+            nodePort: 30222
+
+        persistence:
+          enabled: true
+          storageClass: longhorn
+          accessModes:
+            - ReadWriteOnce
+          size: 10Gi
+
+        postgresql:
+          enabled: true
+          persistence:
+            enabled: true
+            storageClass: longhorn
+            size: 10Gi
+
+        gitea:
+          admin:
+            username: admin
+            password: "CHANGE-ME-STRONG-PASSWORD"
+            email: admin@example.com
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gitea
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

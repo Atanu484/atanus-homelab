@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://jameswynn.github.io/helm-charts
+    chart: homepage
+    targetRevision: 2.0.0
+    helm:
+      releaseName: homepage
+      values: |
+        service:
+          type: NodePort
+          port: 3000
+          nodePort: 31000
+
+        persistence:
+          config:
+            enabled: true
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+
+        # You’ll edit config files inside the container or mount custom ones later
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
