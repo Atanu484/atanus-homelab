@@ -31,6 +31,10 @@ spec:
             - ReadWriteOnce
           size: 10Gi
 
+        # Explicitly disable HA postgres chart (prevents the conflict error)
+        postgresql-ha:
+          enabled: false
+
         postgresql:
           enabled: true
           persistence:
