@@ -1,0 +1,78 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/argoproj/argo-helm.git
+    targetRevision: main
+    path: charts/argo-cd
+    helm:
+      releaseName: argocd
+      values: |
+        global:
+          image:
+            tag: v3.3.1
+        server:
+          extraArgs:
+            - --insecure
+          service:
+            type: ClusterIP
+            externalIPs:
+              - 192.168.50.148
+        configs:
+          cm:
+            resource.exclusions: |
+              - apiGroups:
+                  - authentication.k8s.io
+                  - authorization.k8s.io
+                kinds:
+                  - SelfSubjectReview
+                  - TokenReview
+                  - LocalSubjectAccessReview
+                  - SelfSubjectAccessReview
+                  - SelfSubjectRulesReview
+                  - SubjectAccessReview
+              - apiGroups:
+                  - certificates.k8s.io
+                kinds:
+                  - CertificateSigningRequest
+              - apiGroups:
+                  - cert-manager.io
+                kinds:
+                  - CertificateRequest
+              - apiGroups:
+                  - cilium.io
+                kinds:
+                  - CiliumIdentity
+                  - CiliumEndpoint
+                  - CiliumEndpointSlice
+              - apiGroups:
+                  - kyverno.io
+                  - reports.kyverno.io
+                  - wgpolicyk8s.io
+                kinds:
+                  - PolicyReport
+                  - ClusterPolicyReport
+                  - EphemeralReport
+                  - ClusterEphemeralReport
+                  - AdmissionReport
+                  - ClusterAdmissionReport
+                  - BackgroundScanReport
+                  - ClusterBackgroundScanReport
+                  - UpdateRequest
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - PruneLast=true
