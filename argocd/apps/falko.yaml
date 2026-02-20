@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: falco
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://falcosecurity.github.io/charts
+    chart: falco
+    targetRevision: 8.0.0
+    helm:
+      releaseName: falco
+      values: |
+        # Recommended these days: eBPF driver (no kernel module build pain)
+        driver:
+          kind: ebpf
+
+        falcosidekick:
+          enabled: true
+
+          webui:
+            enabled: true
+            service:
+              type: NodePort
+              nodePort: 31020
+
+            # Optional basic auth for the UI (change this!)
+            # user: "admin:CHANGE-ME-STRONG-PASSWORD"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: falco
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
