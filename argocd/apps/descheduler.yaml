@@ -14,7 +14,7 @@ spec:
       values: |
         kind: Deployment
 
-        schedule: "*/10 * * * *"
+        schedule: "*/1 * * * *"
 
         deschedulerPolicy:
           apiVersion: "descheduler/v1alpha2"
