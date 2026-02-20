@@ -1,0 +1,70 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://traefik.github.io/charts
+    chart: traefik
+    targetRevision: 26.1.0
+    helm:
+      releaseName: traefik
+      values: |
+        # Expose Traefik with NodePorts (like your Grafana pattern)
+        service:
+          type: NodePort
+          spec:
+            externalTrafficPolicy: Local
+          ports:
+            web:
+              port: 80
+              nodePort: 30080
+            websecure:
+              port: 443
+              nodePort: 30443
+
+        # Enable Traefik Dashboard (GUI)
+        ingressRoute:
+          dashboard:
+            enabled: true
+
+        # Core Traefik flags
+        additionalArguments:
+          - "--api.dashboard=true"
+          - "--api.insecure=false"
+          - "--entrypoints.web.address=:80"
+          - "--entrypoints.websecure.address=:443"
+          - "--providers.kubernetescrd=true"
+          - "--providers.kubernetesingress=true"
+
+        # Expose the dashboard via a separate NodePort service
+        ports:
+          traefik:
+            port: 9000
+            expose:
+              default: true
+            exposedPort: 9000
+            protocol: TCP
+            nodePort: 30900
+
+        # CRDs: keep enabled unless you manage them separately
+        providers:
+          kubernetesCRD:
+            enabled: true
+          kubernetesIngress:
+            enabled: true
+
+        # Usually not needed for Traefik itself; it doesn’t store state like Grafana.
+        # Persistence is typically NOT required.
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
