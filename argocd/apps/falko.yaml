@@ -25,8 +25,8 @@ spec:
               type: NodePort
               nodePort: 31020
 
-            # Optional basic auth for the UI (change this!)
-            # user: "admin:CHANGE-ME-STRONG-PASSWORD"
+    
+              user: "admin:CHANGE-ME-STRONG-PASSWORD"
   destination:
     server: https://kubernetes.default.svc
     namespace: falco
