@@ -43,7 +43,7 @@ spec:
             expose: true
             exposedPort: 9000
             protocol: TCP
-            nodePort: 30900
+            nodePort: 30901
 
         additionalArguments:
           - "--api.dashboard=true"
