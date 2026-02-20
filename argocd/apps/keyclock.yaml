@@ -8,25 +8,22 @@ spec:
   source:
     repoURL: https://charts.bitnami.com/bitnami
     chart: keycloak
-    targetRevision: 22.2.1
+    targetRevision: 25.2.0
     helm:
       releaseName: keycloak
       values: |
-        # --- Admin user ---
         auth:
           adminUser: admin
           adminPassword: "CHANGE-ME-STRONG-PASSWORD"
 
-        # --- Service exposure (match your Grafana style) ---
         service:
           type: NodePort
           nodePorts:
             http: 30990
 
         replicaCount: 1
-
-      
         proxy: edge
+
         postgresql:
           enabled: true
           auth:
@@ -38,9 +35,6 @@ spec:
               enabled: true
               storageClass: longhorn
               size: 10Gi
-            # (optional) helps avoid node-hopping in small clusters
-            # podAntiAffinityPreset: soft
-
   destination:
     server: https://kubernetes.default.svc
     namespace: iam
