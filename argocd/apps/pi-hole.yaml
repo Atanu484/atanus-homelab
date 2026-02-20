@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: pihole
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://mojo2600.github.io/pihole-kubernetes/
+    chart: pihole
+    targetRevision: 2.26.1
+    helm:
+      releaseName: pihole
+      values: |
+        replicaCount: 1
+
+        adminPassword: "CHANGE-ME-STRONG-PASSWORD"
+
+        DNS1: "1.1.1.1"
+        DNS2: "1.0.0.1"
+
+        # Web UI (HTTP)
+        serviceWeb:
+          type: NodePort
+          nodePort: 31053
+
+        # DNS service (must be UDP+TCP 53) - best via LoadBalancer on bare metal with MetalLB
+        serviceDns:
+          type: LoadBalancer
+          # If you use MetalLB with a pool, you can optionally pin an IP:
+          # loadBalancerIP: 192.168.1.53
+
+        persistentVolumeClaim:
+          enabled: true
+          storageClass: longhorn
+          size: 2Gi
+
+        # Extra persistence for dnsmasq config (recommended)
+        extraVolumes:
+          - name: dnsmasq
+            persistentVolumeClaim:
+              claimName: pihole-dnsmasq
+        extraVolumeMounts:
+          - name: dnsmasq
+            mountPath: /etc/dnsmasq.d
+
+        # Create the second PVC via extraObjects (so it's also GitOps-managed)
+        extraObjects:
+          - apiVersion: v1
+            kind: PersistentVolumeClaim
+            metadata:
+              name: pihole-dnsmasq
+            spec:
+              accessModes:
+                - ReadWriteOnce
+              storageClassName: longhorn
+              resources:
+                requests:
+                  storage: 1Gi
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: pihole
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

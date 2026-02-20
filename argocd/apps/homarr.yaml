@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: glance
+  name: homarr
   namespace: argocd
 spec:
   project: default
@@ -10,38 +10,46 @@ spec:
     chart: app-template
     targetRevision: 3.5.1
     helm:
-      releaseName: glance
+      releaseName: homarr
       values: |
         controllers:
           main:
             containers:
               main:
                 image:
-                  repository: glanceapp/glance
+                  repository: homarrteam/homarr
                   tag: latest
+                env:
+                  TZ: Europe/Tallinn
                 ports:
                   - name: http
-                    containerPort: 8080
+                    containerPort: 7575
 
         service:
           main:
             type: NodePort
             ports:
               http:
-                port: 8080
-                nodePort: 31030
+                port: 7575
+                nodePort: 31040
 
         persistence:
-          config:
+          data:
             enabled: true
             type: pvc
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 2Gi
-            mountPath: /app/config
+            size: 5Gi
+            mountPath: /app/data
+
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+
   destination:
     server: https://kubernetes.default.svc
-    namespace: glance
+    namespace: homarr
   syncPolicy:
     automated:
       prune: true
