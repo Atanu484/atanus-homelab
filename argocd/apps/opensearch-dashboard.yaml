@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch-dashboards
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://opensearch-project.github.io/helm-charts
+    chart: opensearch-dashboards
+    targetRevision: 3.5.0
+    helm:
+      releaseName: opensearch-dashboards
+      values: |
+        opensearchHosts: "https://opensearch-cluster-master:9200"
+        service:
+          type: NodePort
+          nodePort: 31240
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

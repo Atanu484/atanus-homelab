@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://grafana.github.io/helm-charts
+    chart: alloy
+    targetRevision: 0.10.0
+    helm:
+      releaseName: alloy
+      values: |
+        alloy:
+          # This configures Alloy to collect Kubernetes logs and send them to Loki
+          configMap:
+            create: true
+        controller:
+          type: daemonset
+        service:
+          type: NodePort
+          nodePort: 31220 # Access the Alloy internal UI here
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portainer
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://portainer.github.io/k8s/
+    chart: portainer
+    targetRevision: 1.0.53
+    helm:
+      releaseName: portainer
+      values: |
+        service:
+          type: NodePort
+          nodePort: 31070 # Access the Portainer GUI here (HTTP)
+        tls:
+          force: false
+        persistence:
+          enabled: true
+          storageClass: longhorn
+          size: 5Gi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: portainer
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

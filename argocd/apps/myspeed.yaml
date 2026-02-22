@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myspeed
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: myspeed
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: germannewsmaker/myspeed
+                  tag: latest
+                ports:
+                  - name: http
+                    containerPort: 5216
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 5216
+                nodePort: 31180 # Access MySpeed GUI here
+
+        persistence:
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+            mountPath: /myspeed/data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

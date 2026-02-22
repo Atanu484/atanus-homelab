@@ -1,0 +1,54 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: karakeep
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: karakeep
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: ghcr.io/karakeep-app/karakeep
+                  tag: release
+                env:
+                  NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
+                  MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
+                  NEXTAUTH_URL: "http://<YOUR_NODE_IP>:31200" # Update with your IP
+                ports:
+                  - name: http
+                    containerPort: 3000
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 3000
+                nodePort: 31200 # Access Karakeep GUI here
+
+        persistence:
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 10Gi
+            mountPath: /data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

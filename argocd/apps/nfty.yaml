@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ntfy
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: ntfy
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: binwiederhier/ntfy
+                  tag: latest
+                args: ["serve"]
+                ports:
+                  - name: http
+                    containerPort: 80
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 80
+                nodePort: 31130 # Access ntfy GUI/API here
+
+        persistence:
+          cache:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+            mountPath: /var/cache/ntfy
+          config:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 1Gi
+            mountPath: /etc/ntfy
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: automation
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

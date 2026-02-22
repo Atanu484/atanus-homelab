@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: commafeed
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: commafeed
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: athou/commafeed
+                  tag: latest
+                ports:
+                  - name: http
+                    containerPort: 8082
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 8082
+                nodePort: 31140 # Access CommaFeed GUI here
+
+        persistence:
+          config:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+            mountPath: /commafeed/data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: syncthing
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: syncthing
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: lscr.io/linuxserver/syncthing
+                  tag: latest
+                ports:
+                  - name: http
+                    containerPort: 8384 # Internal GUI Port
+                  - name: sync-tcp
+                    containerPort: 22000 # Internal Sync Port
+                  - name: sync-udp
+                    containerPort: 22000
+                    protocol: UDP
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 8384
+                nodePort: 31110 # Access the Syncthing GUI here
+              sync-tcp:
+                port: 22000
+                nodePort: 32000 # Connect devices using this TCP port
+              sync-udp:
+                port: 22000
+                nodePort: 32000 # Connect devices using this UDP port
+                protocol: UDP
+
+        persistence:
+          config:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+            mountPath: /config
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 50Gi
+            mountPath: /data1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
