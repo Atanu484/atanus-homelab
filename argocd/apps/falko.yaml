@@ -15,18 +15,19 @@ spec:
         # Recommended these days: eBPF driver (no kernel module build pain)
         driver:
           kind: ebpf
+        
+        # Explicitly tells Falco to run the eBPF setup in privileged mode
+        ebpf:
+          privileged: true
 
         falcosidekick:
           enabled: true
-
           webui:
             enabled: true
+            user: "admin:CHANGE-ME-STRONG-PASSWORD"
             service:
               type: NodePort
               nodePort: 31020
-
-    
-              user: "admin:CHANGE-ME-STRONG-PASSWORD"
   destination:
     server: https://kubernetes.default.svc
     namespace: falco
@@ -36,3 +37,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+    # Instructs ArgoCD to label the namespace on creation to bypass PSA baseline
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged

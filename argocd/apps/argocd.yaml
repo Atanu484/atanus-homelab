@@ -6,22 +6,26 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/argoproj/argo-helm.git
-    targetRevision: main
-    path: charts/argo-cd
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    # Pin to the chart you already have installed (you can bump later)
+    targetRevision: 9.4.3
     helm:
       releaseName: argocd
       values: |
         global:
           image:
             tag: v3.3.1
+
         server:
           extraArgs:
             - --insecure
           service:
-            type: ClusterIP
-            externalIPs:
-              - 192.168.50.148
+            type: NodePort
+            nodePortHttp: 30080
+            # optional:
+            # nodePortHttps: 30443
+
         configs:
           cm:
             resource.exclusions: |
