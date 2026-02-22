@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
+    repoURL: https://bjw-s-labs.github.io/helm-charts
     chart: app-template
     targetRevision: 3.5.1
     helm:
@@ -17,7 +17,7 @@ spec:
             containers:
               main:
                 image:
-                  repository: niiknow/vestacp # Update this if you use a different Vesta image
+                  repository: niiknow/vestacp
                   tag: latest
                 ports:
                   - name: http
@@ -29,7 +29,7 @@ spec:
             ports:
               http:
                 port: 80
-                nodePort: 31170 # Access Vesta Dashboard here
+                nodePort: 31170
 
         persistence:
           data:
@@ -39,9 +39,11 @@ spec:
             accessMode: ReadWriteOnce
             size: 5Gi
             mountPath: /data
+
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
+
   syncPolicy:
     automated:
       prune: true
