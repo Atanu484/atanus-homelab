@@ -12,6 +12,9 @@ spec:
     helm:
       releaseName: keycloak
       values: |
+        image:
+          tag: latest
+
         auth:
           adminUser: admin
           adminPassword: "CHANGE-ME-STRONG-PASSWORD"
