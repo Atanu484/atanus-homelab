@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vaultwarden
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: vaultwarden
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: vaultwarden/server
+                  tag: latest
+                ports:
+                  - name: http
+                    containerPort: 80
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 80
+                nodePort: 31060
+
+        persistence:
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 2Gi
+            mountPath: /data
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

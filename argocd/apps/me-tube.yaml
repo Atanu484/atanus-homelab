@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metube
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: metube
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: ghcr.io/alexta69/metube
+                  tag: latest
+                ports:
+                  - name: http
+                    containerPort: 8081 # Internal GUI Port
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 8081
+                nodePort: 31100 # Access the MeTube GUI here
+
+        persistence:
+          downloads:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 50Gi
+            mountPath: /downloads
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

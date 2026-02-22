@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: memos
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: memos
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: neosmemo/memos
+                  tag: stable
+                ports:
+                  - name: http
+                    containerPort: 5230
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 5230
+                nodePort: 31120 # Access Memos GUI here
+
+        persistence:
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 5Gi
+            mountPath: /var/opt/memos
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

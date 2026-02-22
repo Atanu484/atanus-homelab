@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: paperless
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.5.1
+    helm:
+      releaseName: paperless
+      values: |
+        controllers:
+          main:
+            containers:
+              main:
+                image:
+                  repository: ghcr.io/paperless-ngx/paperless-ngx
+                  tag: latest
+                env:
+                  PAPERLESS_URL: "http://<YOUR_NODE_IP>:31090" # Update this later
+                ports:
+                  - name: http
+                    containerPort: 8000 # Internal GUI Port
+
+        service:
+          main:
+            type: NodePort
+            ports:
+              http:
+                port: 8000
+                nodePort: 31090 # Access the Paperless GUI here
+
+        persistence:
+          data:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 10Gi
+            mountPath: /usr/src/paperless/data
+          media:
+            enabled: true
+            type: pvc
+            storageClass: longhorn
+            accessMode: ReadWriteOnce
+            size: 50Gi
+            mountPath: /usr/src/paperless/media
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
