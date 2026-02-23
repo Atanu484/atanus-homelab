@@ -6,39 +6,46 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
-    chart: app-template
-    targetRevision: 3.5.1
+    repoURL: https://guerzon.github.io/vaultwarden
+    chart: vaultwarden
+    targetRevision: 0.34.6
     helm:
       releaseName: vaultwarden
       values: |
-        controllers:
-          main:
-            containers:
-              main:
-                image:
-                  repository: vaultwarden/server
-                  tag: latest
-                ports:
-                  - name: http
-                    containerPort: 80
+        image:
+          repository: vaultwarden/server
+          tag: latest
 
         service:
-          main:
-            type: NodePort
-            ports:
-              http:
-                port: 80
-                nodePort: 31060
+          type: ClusterIP
 
-        persistence:
-          data:
-            enabled: true
-            type: pvc
-            storageClass: longhorn
-            accessMode: ReadWriteOnce
-            size: 2Gi
-            mountPath: /data
+        storage:
+          enabled: true
+          size: 2Gi
+          class: longhorn
+          dataDir: /data
+
+        extraObjects:
+          - apiVersion: v1
+            kind: Service
+            metadata:
+              name: vaultwarden-nodeport
+              labels:
+                app.kubernetes.io/name: vaultwarden
+                app.kubernetes.io/instance: vaultwarden
+                app.kubernetes.io/component: vaultwarden
+            spec:
+              type: NodePort
+              selector:
+                app.kubernetes.io/name: vaultwarden
+                app.kubernetes.io/instance: vaultwarden
+                app.kubernetes.io/component: vaultwarden
+              ports:
+                - name: http
+                  port: 80
+                  targetPort: 8080
+                  nodePort: 32080
+                  protocol: TCP
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
