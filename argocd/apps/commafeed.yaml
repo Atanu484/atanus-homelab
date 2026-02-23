@@ -25,20 +25,23 @@ spec:
 
         service:
           main:
+            controller: main
             type: NodePort
             ports:
               http:
                 port: 8082
-                nodePort: 31140 # Access CommaFeed GUI here
+                nodePort: 31140
 
         persistence:
           config:
             enabled: true
-            type: pvc
+            type: persistentVolumeClaim
             storageClass: longhorn
             accessMode: ReadWriteOnce
             size: 2Gi
-            mountPath: /commafeed/data
+            globalMounts:
+              - path: /commafeed/data
+
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
