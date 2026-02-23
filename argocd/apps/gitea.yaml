@@ -29,7 +29,7 @@ spec:
           storageClass: longhorn
           accessModes:
             - ReadWriteOnce
-          size: 10Gi
+          size: 3Gi
 
         # Disable HA postgres
         postgresql-ha:
@@ -47,7 +47,7 @@ spec:
           persistence:
             enabled: true
             storageClass: longhorn
-            size: 10Gi
+            size: 3Gi
 
         # Disable redis-cluster to avoid ImagePullBackOff ("tag not found")
         redis-cluster:
