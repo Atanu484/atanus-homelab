@@ -6,46 +6,50 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
-    chart: app-template
-    targetRevision: 3.5.1
+    repoURL: https://jellyfin.github.io/jellyfin-helm
+    chart: jellyfin
+    targetRevision: 2.7.0
     helm:
       releaseName: jellyfin
       values: |
-        controllers:
-          main:
-            containers:
-              main:
-                image:
-                  repository: lscr.io/linuxserver/jellyfin
-                  tag: latest
-                ports:
-                  - name: http
-                    containerPort: 8096
+        image:
+          repository: lscr.io/linuxserver/jellyfin
+          tag: latest
+          pullPolicy: IfNotPresent
 
         service:
-          main:
-            type: NodePort
-            ports:
-              http:
-                port: 8096
-                nodePort: 31050
+          type: NodePort
+          port: 8096
+          nodePort: 31050
+
+        podSecurityContext:
+          fsGroup: 1000
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+
+        jellyfin:
+          env:
+            - name: TZ
+              value: "Europe/Tallinn"
+            # linuxserver-style IDs (optional but usually recommended)
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
 
         persistence:
           config:
             enabled: true
-            type: pvc
+            size: 1Gi
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 10Gi
-            mountPath: /config
           media:
             enabled: true
             type: pvc
+            size: 3Gi
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 100Gi
-            mountPath: /data
   destination:
     server: https://kubernetes.default.svc
     namespace: media

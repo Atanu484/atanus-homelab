@@ -6,46 +6,25 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
-    chart: app-template
-    targetRevision: 3.5.1
+    repoURL: https://homarr-labs.github.io/charts/
+    chart: homarr
+    targetRevision: 8.9.1
     helm:
       releaseName: homarr
       values: |
-        controllers:
-          main:
-            containers:
-              main:
-                image:
-                  repository: homarrteam/homarr
-                  tag: latest
-                env:
-                  TZ: Europe/Tallinn
-                ports:
-                  - name: http
-                    containerPort: 7575
+        env:
+          TZ: "Europe/Tallinn"
 
         service:
           main:
             type: NodePort
-            ports:
-              http:
-                port: 7575
-                nodePort: 31040
+            nodePort: 31040
 
         persistence:
-          data:
+          homarrDatabase:
             enabled: true
-            type: pvc
-            storageClass: longhorn
-            accessMode: ReadWriteOnce
-            size: 5Gi
-            mountPath: /app/data
-
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-          fsGroup: 1000
+            storageClassName: longhorn
+            size: 1Gi
 
   destination:
     server: https://kubernetes.default.svc
@@ -56,3 +35,13 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-encryption
+  namespace: homarr
+type: Opaque
+stringData:
+  db-encryption-key: "CHANGE_ME_TO_A_LONG_RANDOM_STRING"
