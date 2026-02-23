@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
+
   source:
     repoURL: https://charts.longhorn.io
     chart: longhorn
@@ -23,13 +24,32 @@ spec:
         # Required for Argo CD / GitOps installs
         preUpgradeChecker:
           jobEnabled: false
+
+        extraObjects:
+          - apiVersion: v1
+            kind: Namespace
+            metadata:
+              name: longhorn-system
+              labels:
+                pod-security.kubernetes.io/enforce: privileged
+                pod-security.kubernetes.io/warn: privileged
+                pod-security.kubernetes.io/audit: privileged
+
+          - apiVersion: scheduling.k8s.io/v1
+            kind: PriorityClass
+            metadata:
+              name: longhorn-critical
+            value: 1000000000
+            globalDefault: false
+            description: "Priority class for Longhorn components."
+
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
+
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
       - ServerSideApply=true
