@@ -49,14 +49,14 @@ spec:
             type: pvc
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 2Gi
+            size: 1Gi
             mountPath: /config
           data:
             enabled: true
             type: pvc
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 50Gi
+            size: 2Gi
             mountPath: /data1
   destination:
     server: https://kubernetes.default.svc
