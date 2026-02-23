@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
+    repoURL: https://bjw-s-labs.github.io/helm-charts
     chart: app-template
     targetRevision: 3.5.1
     helm:
@@ -25,20 +25,21 @@ spec:
 
         service:
           main:
+            controller: main
             type: NodePort
             ports:
               http:
                 port: 3000
-                nodePort: 31190 # Access Wakapi GUI here
+                nodePort: 31190
 
         persistence:
           data:
-            enabled: true
-            type: pvc
+            type: persistentVolumeClaim
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 5Gi
-            mountPath: /data
+            size: 1Gi
+            globalMounts:
+              - path: /data
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
