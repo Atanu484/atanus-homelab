@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
+    repoURL: https://bjw-s-labs.github.io/helm-charts
     chart: app-template
     targetRevision: 3.5.1
     helm:
@@ -21,9 +21,9 @@ spec:
                   tag: latest
                 ports:
                   - name: http
-                    containerPort: 8384 # Internal GUI Port
+                    containerPort: 8384
                   - name: sync-tcp
-                    containerPort: 22000 # Internal Sync Port
+                    containerPort: 22000
                   - name: sync-udp
                     containerPort: 22000
                     protocol: UDP
@@ -34,13 +34,13 @@ spec:
             ports:
               http:
                 port: 8384
-                nodePort: 31110 # Access the Syncthing GUI here
+                nodePort: 31110
               sync-tcp:
                 port: 22000
-                nodePort: 32000 # Connect devices using this TCP port
+                nodePort: 32000
               sync-udp:
                 port: 22000
-                nodePort: 32000 # Connect devices using this UDP port
+                nodePort: 32000
                 protocol: UDP
 
         persistence:
