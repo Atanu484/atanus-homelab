@@ -25,6 +25,7 @@ spec:
 
         service:
           main:
+            controller: main
             type: NodePort
             ports:
               http:
@@ -33,17 +34,15 @@ spec:
 
         persistence:
           data:
-            enabled: true
-            type: pvc
+            type: persistentVolumeClaim
             storageClass: longhorn
             accessMode: ReadWriteOnce
-            size: 5Gi
-            mountPath: /data
-
+            size: 2Gi
+            globalMounts:
+              - path: /data
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
-
   syncPolicy:
     automated:
       prune: true
