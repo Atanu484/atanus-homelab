@@ -33,7 +33,7 @@ spec:
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
-                      storage: 10Gi
+                      storage: 3Gi
 
         alertmanager:
           service:
