@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:Atanu484/atanus-homelab.git
+    repoURL: https://github.com/Atanu484/atanus-homelab.git
     targetRevision: master
     path: argocd/apps
   destination:
