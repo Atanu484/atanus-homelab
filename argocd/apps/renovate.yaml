@@ -5,9 +5,8 @@ metadata:
   namespace: argocd
 spec:
   project: default
-
   source:
-    repoURL: https://docs.renovatebot.com/helm-charts
+    repoURL: oci://ghcr.io/renovatebot/charts
     chart: renovate
     targetRevision: 46.25.3
     helm:
@@ -24,7 +23,6 @@ spec:
               "dependencyDashboard": true
             }
 
-        # Run every 6 hours
         cronjob:
           schedule: "0 */6 * * *"
           concurrencyPolicy: Forbid
