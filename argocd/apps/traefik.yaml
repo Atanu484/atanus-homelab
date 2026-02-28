@@ -15,7 +15,7 @@ spec:
         service:
           type: NodePort
           spec:
-            externalTrafficPolicy: Local
+            externalTrafficPolicy: Cluster
 
         ports:
           web:
@@ -23,30 +23,25 @@ spec:
             expose: true
             exposedPort: 80
             protocol: TCP
-            nodePort: 30080
+            nodePort: 31180
 
           websecure:
             port: 8443
             expose: true
             exposedPort: 443
             protocol: TCP
-            nodePort: 30443
+            nodePort: 31443
 
           traefik:
             port: 9000
             expose: true
             exposedPort: 9000
             protocol: TCP
-            nodePort: 30901
+            nodePort: 31901
+
         api:
           dashboard: true
-          ingressRoute:
-            dashboard:
-              enabled: true
-              # This exposes dashboard on the "traefik" entryPoint (port 9000 -> NodePort 30901)
-              entryPoints: ["traefik"]
-              # default matchRule is fine, but explicit is clearer
-              matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+          insecure: true
 
         additionalArguments:
           - "--providers.kubernetescrd=true"
