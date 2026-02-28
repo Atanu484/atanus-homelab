@@ -17,12 +17,6 @@ spec:
           spec:
             externalTrafficPolicy: Local
 
-        # Enable the dashboard route (GUI)
-        ingressRoute:
-          dashboard:
-            enabled: true
-
-        # Expose ports via NodePort
         ports:
           web:
             port: 8000
@@ -44,9 +38,17 @@ spec:
             exposedPort: 9000
             protocol: TCP
             nodePort: 30901
+        api:
+          dashboard: true
+          ingressRoute:
+            dashboard:
+              enabled: true
+              # This exposes dashboard on the "traefik" entryPoint (port 9000 -> NodePort 30901)
+              entryPoints: ["traefik"]
+              # default matchRule is fine, but explicit is clearer
+              matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
 
         additionalArguments:
-          - "--api.dashboard=true"
           - "--providers.kubernetescrd=true"
           - "--providers.kubernetesingress=true"
 
