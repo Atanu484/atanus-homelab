@@ -12,19 +12,22 @@ spec:
     helm:
       releaseName: renovate
       values: |
+        envFrom:
+          - secretRef:
+              name: renovate-secrets
+
         renovate:
           config: |
             {
               "platform": "github",
               "endpoint": "https://api.github.com/",
-              "token": "REPLACE_WITH_YOUR_GITHUB_PAT",
               "repositories": ["Atanu484/atanus-homelab"],
               "extends": ["config:base"],
               "dependencyDashboard": true
             }
 
         cronjob:
-          schedule: "0 */6 * * *"
+          schedule: "*/10 * * * *"
           concurrencyPolicy: Forbid
 
   destination:
