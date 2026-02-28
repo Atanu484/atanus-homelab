@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
+    repoURL: https://bjw-s-labs.github.io/helm-charts/
     chart: app-template
     targetRevision: 3.5.1
     helm:
@@ -22,7 +22,7 @@ spec:
                 env:
                   NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
                   MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
-                  NEXTAUTH_URL: "http://<YOUR_NODE_IP>:31200" # Update with your IP
+                  NEXTAUTH_URL: "http://192.168.50.148:31200"
                 ports:
                   - name: http
                     containerPort: 3000
@@ -33,7 +33,7 @@ spec:
             ports:
               http:
                 port: 3000
-                nodePort: 31200 # Access Karakeep GUI here
+                nodePort: 31200
 
         persistence:
           data:
