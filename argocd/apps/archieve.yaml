@@ -24,7 +24,7 @@ spec:
             containers:
               main:
                 image:
-                  repository: archiveteam/warrior-dockerfile
+                  repository: atdr.meo.ws/archiveteam/warrior-dockerfile
                   tag: latest
 
                 securityContext:
@@ -45,6 +45,7 @@ spec:
             ports:
               http:
                 port: 8001
+                targetPort: 8001
                 nodePort: 31071
 
         persistence:
