@@ -16,6 +16,8 @@ spec:
           repository: vaultwarden/server
           tag: latest
 
+        domain: "http://192.168.50.136:32080/"
+
         service:
           type: ClusterIP
 
@@ -24,10 +26,6 @@ spec:
           size: 2Gi
           class: longhorn
           dataDir: /data
-
-        env:
-          TZ: "Europe/Tallinn"
-          DOMAIN: "http://192.168.50.136:32080"
 
         extraObjects:
           - apiVersion: v1
