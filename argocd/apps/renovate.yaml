@@ -27,7 +27,7 @@ spec:
             }
 
         cronjob:
-          schedule: "*/10 * * * *"
+          schedule: "0 0 * * *"
           concurrencyPolicy: Forbid
 
   destination:
