@@ -24,7 +24,7 @@ spec:
             containers:
               main:
                 image:
-                  repository: atdr.meo.ws/archiveteam/warrior-dockerfile
+                  repository: archiveteam/warrior3
                   tag: latest
 
                 securityContext:
