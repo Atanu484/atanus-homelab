@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://percona.github.io/percona-helm-charts
     chart: pmm
-    targetRevision: 1.4.9
+    targetRevision: 1.5.1
     helm:
       releaseName: pmm
       values: |
