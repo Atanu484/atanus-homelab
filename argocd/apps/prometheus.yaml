@@ -21,7 +21,7 @@ spec:
             type: NodePort
             nodePort: 30900
           prometheusSpec:
-            retention: 3d 
+            retention: 3d
             resources:
               requests:
                 memory: 512Mi
@@ -48,6 +48,14 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: privileged
+        pod-security.kubernetes.io/enforce-version: latest
+        pod-security.kubernetes.io/audit: privileged
+        pod-security.kubernetes.io/audit-version: latest
+        pod-security.kubernetes.io/warn: privileged
+        pod-security.kubernetes.io/warn-version: latest
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
