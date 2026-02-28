@@ -38,9 +38,9 @@ spec:
             type: persistentVolumeClaim
             accessMode: ReadWriteOnce
             size: 5Gi
-            globalMounts:
-              - path: /home/warrior
             storageClass: longhorn
+            globalMounts:
+              - path: /home/warrior/data
 
   destination:
     server: https://kubernetes.default.svc
