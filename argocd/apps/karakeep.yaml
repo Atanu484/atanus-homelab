@@ -6,43 +6,27 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://bjw-s-labs.github.io/helm-charts/
-    chart: app-template
-    targetRevision: 3.5.1
+    repoURL: https://karakeep-app.github.io/helm-charts/
+    chart: karakeep
+    targetRevision: 0.27.0
     helm:
       releaseName: karakeep
       values: |
-        controllers:
-          main:
-            containers:
-              main:
-                image:
-                  repository: ghcr.io/karakeep-app/karakeep
-                  tag: release
-                env:
-                  NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
-                  MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
-                  NEXTAUTH_URL: "http://192.168.50.148:31200"
-                ports:
-                  - name: http
-                    containerPort: 3000
-
         service:
-          main:
-            type: NodePort
-            ports:
-              http:
-                port: 3000
-                nodePort: 31200
-
+          type: NodePort
+          ports:
+            web:
+              nodePort: 31200
         persistence:
           data:
             enabled: true
-            type: pvc
             storageClass: longhorn
             accessMode: ReadWriteOnce
             size: 10Gi
-            mountPath: /data
+        env:
+          NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
+          MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
+          NEXTAUTH_URL: "http://192.168.50.148:31200"
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
