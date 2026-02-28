@@ -12,11 +12,13 @@ spec:
     helm:
       releaseName: opensearch
       values: |
-        tolerations:
-          - operator: "Exists"
-            effect: "NoSchedule"
-          - operator: "Exists"
-            effect: "NoExecute"
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: DoesNotExist
 
         singleNode: true
         replicas: 1
