@@ -14,7 +14,6 @@ spec:
       values: |
         controllers:
           main:
-            replicas: 1
             containers:
               main:
                 image:
@@ -23,12 +22,10 @@ spec:
                 env:
                   DOWNLOADER: "protostar"
                   SELECTED_PROJECT: "auto"
-                ports:
-                  http:
-                    containerPort: 8001
 
         service:
           main:
+            controller: main
             type: NodePort
             ports:
               http:
@@ -38,20 +35,12 @@ spec:
         persistence:
           data:
             enabled: true
-            type: pvc
-            storageClass: longhorn
+            type: persistentVolumeClaim
             accessMode: ReadWriteOnce
             size: 5Gi
+            storageClassName: longhorn
             globalMounts:
               - path: /home/warrior
-
-        resources:
-          requests:
-            cpu: 200m
-            memory: 256Mi
-          limits:
-            cpu: "2"
-            memory: 2Gi
 
   destination:
     server: https://kubernetes.default.svc
