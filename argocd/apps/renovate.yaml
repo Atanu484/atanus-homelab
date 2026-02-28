@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/renovatebot/helm-charts
-    chart: renovate
-    targetRevision: 46.44.0
+    repoURL: https://github.com/renovatebot/helm-charts.git
+    path: charts/renovate
+    targetRevision: renovate-46.44.0
     helm:
       releaseName: renovate
       values: |
