@@ -18,6 +18,10 @@ spec:
           auth_enabled: false
           commonConfig:
             replication_factor: 1
+
+          limits_config:
+            allow_structured_metadata: false
+
           schemaConfig:
             configs:
               - from: "2020-01-01"
@@ -27,8 +31,10 @@ spec:
                 index:
                   prefix: loki_index_
                   period: 24h
+
           storage:
             type: filesystem
+
           storage_config:
             boltdb_shipper:
               active_index_directory: /var/loki/index
