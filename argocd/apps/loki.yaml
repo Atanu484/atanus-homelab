@@ -13,22 +13,57 @@ spec:
       releaseName: loki
       values: |
         deploymentMode: SingleBinary
+
         loki:
           auth_enabled: false
           commonConfig:
             replication_factor: 1
           storage:
             type: filesystem
+
         singleBinary:
           replicas: 1
           persistence:
             enabled: true
             storageClass: longhorn
             size: 50Gi
+
+        simpleScalable:
+          read:
+            replicas: 0
+          write:
+            replicas: 0
+          backend:
+            replicas: 0
+
+        read:
+          replicas: 0
+        write:
+          replicas: 0
+        backend:
+          replicas: 0
+        ingester:
+          replicas: 0
+        distributor:
+          replicas: 0
+        querier:
+          replicas: 0
+        queryFrontend:
+          replicas: 0
+        queryScheduler:
+          replicas: 0
+        compactor:
+          replicas: 0
+        ruler:
+          replicas: 0
+        indexGateway:
+          replicas: 0
+
+        # Gateway NodePort (your existing intent)
         gateway:
           service:
             type: NodePort
-            nodePort: 31210 # Loki API Gateway
+            nodePort: 31210
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
