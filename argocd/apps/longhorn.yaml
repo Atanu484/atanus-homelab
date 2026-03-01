@@ -5,7 +5,6 @@ metadata:
   namespace: argocd
 spec:
   project: default
-
   source:
     repoURL: https://charts.longhorn.io
     chart: longhorn
@@ -21,9 +20,12 @@ spec:
             type: NodePort
             nodePort: 30808
 
-        # Required for Argo CD / GitOps installs
         preUpgradeChecker:
           jobEnabled: false
+
+        defaultSettings:
+          automaticEngineUpgrade: true
+          concurrentAutomaticEngineUpgradePerNodeLimit: 1
 
         extraObjects:
           - apiVersion: v1
@@ -42,11 +44,9 @@ spec:
             value: 1000000000
             globalDefault: false
             description: "Priority class for Longhorn components."
-
   destination:
     server: https://kubernetes.default.svc
     namespace: longhorn-system
-
   syncPolicy:
     automated:
       prune: true
