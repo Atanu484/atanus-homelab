@@ -20,21 +20,24 @@ spec:
         ports:
           web:
             port: 8000
-            expose: true
+            expose:
+              default: true
             exposedPort: 80
             protocol: TCP
             nodePort: 31180
 
           websecure:
             port: 8443
-            expose: true
+            expose:
+              default: true
             exposedPort: 443
             protocol: TCP
             nodePort: 31443
 
           traefik:
             port: 9000
-            expose: true
+            expose:
+              default: true
             exposedPort: 9000
             protocol: TCP
             nodePort: 31901
