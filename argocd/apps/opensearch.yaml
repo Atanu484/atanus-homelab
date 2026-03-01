@@ -25,13 +25,18 @@ spec:
 
         protocol: http
 
-        # Disable security plugin for simplicity
         config:
           opensearch.yml: |
             cluster.name: opensearch-cluster
             network.host: 0.0.0.0
             discovery.type: single-node
             plugins.security.disabled: true
+
+        extraEnvs:
+          - name: DISABLE_INSTALL_DEMO_CONFIG
+            value: "true"
+          - name: DISABLE_SECURITY_PLUGIN
+            value: "true"
 
         opensearchJavaOpts: "-Xms256m -Xmx1024m"
 
@@ -49,14 +54,6 @@ spec:
           accessModes:
             - ReadWriteOnce
           size: 10Gi
-        
-        extraEnvs:
-          - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
-            value: "ChangeM3!Str0ngP@ssw0rd"
-        - name: DISABLE_INSTALL_DEMO_CONFIG
-            value: "true"
-        - name: DISABLE_SECURITY_PLUGIN
-            value: "true"
 
   destination:
     server: https://kubernetes.default.svc
