@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: archiveteam-warrior
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.6.2
+    helm:
+      releaseName: archiveteam-warrior
+      values: |
+        controllers:
+          main:
+            strategy: Recreate
+
+            pod:
+              securityContext:
+                fsGroup: 1000
+                fsGroupChangePolicy: "OnRootMismatch"
+
+            containers:
+              main:
+                image:
+                  repository: archiveteam/warrior3
+                  tag: latest
+
+                ports:
+                  - name: http
+                    containerPort: 8001
+
+                securityContext:
+                  runAsUser: 1000
+                  runAsGroup: 1000
+                  runAsNonRoot: true
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: false
+
+                env:
+                  DOWNLOADER: "protostar"
+                  SELECTED_PROJECT: "auto"
+
+        service:
+          main:
+            controller: main
+            type: NodePort
+            ports:
+              http:
+                port: 8001
+                nodePort: 31071
+
+        persistence:
+          data:
+            enabled: true
+            type: persistentVolumeClaim
+            accessMode: ReadWriteOnce
+            size: 5Gi
+            storageClass: longhorn
+            globalMounts:
+              - path: /home/warrior/data
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: archiveteam
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
