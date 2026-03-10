@@ -1,4 +1,5 @@
-# Keycloak via Codecentric keycloakx (official Keycloak image: quay.io/keycloak/keycloak)
+# Keycloak via Codecentric keycloakx (Keycloak-X / Quarkus — NOT the deprecated Wildfly "keycloak" chart)
+# Chart: keycloakx. Image: quay.io/keycloak/keycloak.
 # Depends on keycloak-postgresql app in namespace iam.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -42,7 +43,7 @@ spec:
 
         proxy:
           enabled: true
-          mode: edge
+          mode: forwarded
           http:
             enabled: true
 
