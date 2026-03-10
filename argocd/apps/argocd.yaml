@@ -37,6 +37,9 @@ spec:
             enabled: true
             storageClass: longhorn
             size: 2Gi
+          redis:
+            config:
+              min-replicas-to-write: 0
 
         # --- Exported from your manual config (GitOps source of truth) ---
         configs:
