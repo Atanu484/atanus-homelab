@@ -26,7 +26,7 @@ spec:
         env:
           NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
           MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
-          NEXTAUTH_URL: "http://192.168.50.148:31200"
+          NEXTAUTH_URL: "https://karakeep.atanuslab.xyz"
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
