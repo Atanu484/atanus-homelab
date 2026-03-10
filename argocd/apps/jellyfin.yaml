@@ -13,29 +13,27 @@ spec:
       releaseName: jellyfin
       values: |
         image:
-          repository: lscr.io/linuxserver/jellyfin
-          tag: latest
+          repository: docker.io/jellyfin/jellyfin
+          tag: "10.9.11"
           pullPolicy: IfNotPresent
+
+        deploymentStrategy:
+          type: Recreate
 
         service:
           type: NodePort
           port: 8096
           nodePort: 31050
 
+        # Official image works with fsGroup only; runAsUser/runAsGroup break LinuxServer init
         podSecurityContext:
           fsGroup: 1000
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
+        securityContext: {}
 
         jellyfin:
           env:
             - name: TZ
               value: "Europe/Tallinn"
-            - name: PUID
-              value: "1000"
-            - name: PGID
-              value: "1000"
 
         persistence:
           config:
