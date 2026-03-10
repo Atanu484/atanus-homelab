@@ -1,9 +1,6 @@
 # Argo CD self-management: this Application deploys Argo CD from the official Helm chart.
-# Once root-app syncs this file, Argo CD will manage its own workloads (server, repo-server,
-# application-controller, redis). Your other Application resources (root-app, cert-manager, etc.)
-# remain owned by root-app. To adopt an existing manual install: ensure your install matches
-# the chart's resource names (e.g. argocd-application-controller, argocd-server) or remove the
-# old install before syncing. Tune settings via the values block below or move to a values file.
+# All config that was previously manual is now in Git here so it is not lost on sync.
+# Repo credentials (private repos) stay in-cluster Secrets; use Sealed Secrets or document locally.
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -21,9 +18,6 @@ spec:
     helm:
       releaseName: argocd
       values: |
-        # Minimal values; add your customizations (ingress, resources, replicas, etc.) here.
-        # If you had repo credentials or custom config, migrate them into these values or
-        # a separate Secret and reference via extraVolumes/extraVolumeMounts.
         server:
           replicaCount: 1
           service:
@@ -34,6 +28,121 @@ spec:
           replicaCount: 1
         controller:
           replicaCount: 1
+
+        # Redis: use Redis HA with Longhorn persistence (like rest of apps)
+        redis-ha:
+          enabled: true
+          replicas: 1
+          persistentVolume:
+            enabled: true
+            storageClass: longhorn
+            size: 2Gi
+
+        # --- Exported from your manual config (GitOps source of truth) ---
+        configs:
+          cm:
+            url: "https://argocd.example.com"
+            admin.enabled: "true"
+            application.instanceLabelKey: argocd.argoproj.io/instance
+            application.sync.impersonation.enabled: "false"
+            exec.enabled: "false"
+            statusbadge.enabled: "false"
+            timeout.reconciliation: 120s
+            timeout.reconciliation.jitter: 60s
+            timeout.hard.reconciliation: 0s
+            resource.customizations.ignoreResourceUpdates.all: |
+              jsonPointers:
+              - /status
+            resource.customizations.ignoreResourceUpdates.argoproj.io_Application: |
+              jqPathExpressions:
+              - '.metadata.annotations."notified.notifications.argoproj.io"'
+              - '.metadata.annotations."argocd.argoproj.io/refresh"'
+              - '.metadata.annotations."argocd.argoproj.io/hydrate"'
+              - '.operation'
+            resource.customizations.ignoreResourceUpdates.argoproj.io_Rollout: |
+              jqPathExpressions:
+              - '.metadata.annotations."notified.notifications.argoproj.io"'
+            resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler: |
+              jqPathExpressions:
+              - '.metadata.annotations."autoscaling.alpha.kubernetes.io/behavior"'
+              - '.metadata.annotations."autoscaling.alpha.kubernetes.io/conditions"'
+              - '.metadata.annotations."autoscaling.alpha.kubernetes.io/metrics"'
+              - '.metadata.annotations."autoscaling.alpha.kubernetes.io/current-metrics"'
+            resource.customizations.ignoreResourceUpdates.ConfigMap: |
+              jqPathExpressions:
+              - '.metadata.annotations."cluster-autoscaler.kubernetes.io/last-updated"'
+              - '.metadata.annotations."control-plane.alpha.kubernetes.io/leader"'
+            resource.customizations.ignoreResourceUpdates.apps_ReplicaSet: |
+              jqPathExpressions:
+              - '.metadata.annotations."deployment.kubernetes.io/desired-replicas"'
+              - '.metadata.annotations."deployment.kubernetes.io/max-replicas"'
+              - '.metadata.annotations."rollout.argoproj.io/desired-replicas"'
+            resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice: |
+              jsonPointers:
+              - /metadata
+              - /endpoints
+              - /ports
+            resource.customizations.ignoreResourceUpdates.Endpoints: |
+              jsonPointers:
+              - /metadata
+              - /subsets
+            resource.exclusions: |
+              - apiGroups:
+                - ''
+                - discovery.k8s.io
+                kinds:
+                - Endpoints
+                - EndpointSlice
+              - apiGroups:
+                - coordination.k8s.io
+                kinds:
+                - Lease
+              - apiGroups:
+                - authentication.k8s.io
+                - authorization.k8s.io
+                kinds:
+                - SelfSubjectReview
+                - TokenReview
+                - LocalSubjectAccessReview
+                - SelfSubjectAccessReview
+                - SelfSubjectRulesReview
+                - SubjectAccessReview
+              - apiGroups:
+                - certificates.k8s.io
+                kinds:
+                - CertificateSigningRequest
+              - apiGroups:
+                - cert-manager.io
+                kinds:
+                - CertificateRequest
+              - apiGroups:
+                - cilium.io
+                kinds:
+                - CiliumIdentity
+                - CiliumEndpoint
+                - CiliumEndpointSlice
+              - apiGroups:
+                - kyverno.io
+                - reports.kyverno.io
+                - wgpolicyk8s.io
+                kinds:
+                - PolicyReport
+                - ClusterPolicyReport
+                - EphemeralReport
+                - ClusterEphemeralReport
+                - AdmissionReport
+                - ClusterAdmissionReport
+                - BackgroundScanReport
+                - ClusterBackgroundScanReport
+                - UpdateRequest
+          params:
+            applicationsetcontroller.enable.leader.election: "false"
+          rbac:
+            create: true
+            policy.default: ""
+            policy.csv: ""
+            policy.matchMode: glob
+            scopes: '[groups]'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
