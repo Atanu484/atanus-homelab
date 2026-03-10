@@ -21,7 +21,10 @@ spec:
 
         serviceWeb:
           type: NodePort
-          nodePort: 31053
+          http:
+            nodePort: 31053
+          https:
+            nodePort: 31246
 
         serviceDns:
           type: NodePort
