@@ -17,7 +17,7 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/longhorn.png" width="18"> Storage | [Longhorn](https://longhorn.io/) + [MinIO](https://min.io/) for S3 |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cert-manager.png" width="18"> TLS | [cert-manager](https://cert-manager.io/) |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" width="18"> Secrets | [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) — encrypted in Git |
-| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/renovate.png" width="18"> Updates | [Renovate](https://github.com/renovatebot/renovate) — automatic PRs for chart bumps |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/renovate.png" width="18"> Updates | [Renovate](https://github.com/renovatebot/renovate) — runs in GitHub Actions (daily); add repo secret `RENOVATE_TOKEN` (PAT with `repo` scope) |
 
 ## What's running
 
