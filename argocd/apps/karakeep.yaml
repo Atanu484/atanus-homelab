@@ -36,6 +36,20 @@ spec:
                   storageClass: longhorn
                   globalMounts:
                     - path: /data
+
+        ingress:
+          karakeep:
+            className: traefik
+            annotations:
+              traefik.ingress.kubernetes.io/router.entrypoints: web
+            hosts:
+              - host: karakeep.atanuslab.xyz
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    service:
+                      identifier: karakeep
+                      port: http
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
@@ -45,25 +59,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: karakeep
-  namespace: productivity
-  annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: karakeep.atanuslab.xyz
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: karakeep
-                port:
-                  number: 3000
