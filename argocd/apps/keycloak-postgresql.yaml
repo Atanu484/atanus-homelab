@@ -25,7 +25,9 @@ spec:
             size: 3Gi
 
         image:
-          tag: "16.4.0-debian-12-r8"
+          registry: docker.io
+          repository: bitnamilegacy/postgresql
+          tag: "16.6.0"
   destination:
     server: https://kubernetes.default.svc
     namespace: iam
