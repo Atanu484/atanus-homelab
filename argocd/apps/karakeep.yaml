@@ -12,21 +12,30 @@ spec:
     helm:
       releaseName: karakeep
       values: |
+        applicationHost: karakeep.atanuslab.xyz
+        applicationProtocol: https
+        applicationSecretKey: "CHANGE_ME_RANDOM_STRING"
+        meilisearchMasterKey: "CHANGE_ME_RANDOM_STRING"
+
         service:
-          type: NodePort
-          ports:
-            web:
-              nodePort: 31200
-        persistence:
-          data:
-            enabled: true
-            storageClass: longhorn
-            accessMode: ReadWriteOnce
-            size: 10Gi
-        env:
-          NEXTAUTH_SECRET: "CHANGE_ME_RANDOM_STRING"
-          MEILI_MASTER_KEY: "CHANGE_ME_RANDOM_STRING"
-          NEXTAUTH_URL: "https://karakeep.atanuslab.xyz"
+          karakeep:
+            controller: karakeep
+            type: NodePort
+            ports:
+              http:
+                port: 3000
+                nodePort: 31200
+
+        controllers:
+          karakeep:
+            statefulset:
+              volumeClaimTemplates:
+                - name: data
+                  accessMode: ReadWriteOnce
+                  size: 10Gi
+                  storageClass: longhorn
+                  globalMounts:
+                    - path: /data
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity
