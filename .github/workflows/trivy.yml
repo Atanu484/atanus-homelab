@@ -16,7 +16,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run Trivy config (table – visible in log)
         uses: aquasecurity/trivy-action@0.24.0
         with:
@@ -69,7 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run Trivy filesystem
         uses: aquasecurity/trivy-action@0.24.0
         with:
