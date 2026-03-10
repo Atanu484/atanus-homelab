@@ -41,11 +41,10 @@ spec:
             enabled: true
             Size: 10Gi
 
-        extraPodSpec:
-          dnsConfig:
-            options:
-              - name: ndots
-                value: "1"
+        dnsConfig:
+          options:
+            - name: ndots
+              value: "1"
   destination:
     server: https://kubernetes.default.svc
     namespace: minecraft
