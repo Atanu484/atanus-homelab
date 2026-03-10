@@ -24,7 +24,7 @@ spec:
             containers:
               main:
                 image:
-                  repository: archiveteam/warrior3
+                  repository: archiveteam/warrior-dockerfile
                   tag: latest
 
                 ports:
@@ -37,6 +37,10 @@ spec:
                   runAsNonRoot: true
                   allowPrivilegeEscalation: false
                   readOnlyRootFilesystem: false
+                  capabilities:
+                    drop: ["ALL"]
+                  seccompProfile:
+                    type: RuntimeDefault
 
                 env:
                   DOWNLOADER: "protostar"
