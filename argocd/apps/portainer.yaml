@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://portainer.github.io/k8s/
     chart: portainer
-    targetRevision: 239.0.1
+    targetRevision: 239.0.2
     helm:
       releaseName: portainer
       values: |
