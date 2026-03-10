@@ -1,0 +1,65 @@
+# Trivy container image scan: extract images from argocd manifests and scan for CVEs.
+# Fails the run on CRITICAL/HIGH so you get fast feedback before ArgoCD sync.
+name: Trivy container images
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 0"
+jobs:
+  trivy-image:
+    name: Trivy container images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+          yq --version
+
+      - name: Extract container images
+        id: extract
+        run: |
+          ./scripts/extract-images.sh | sort -u > images.txt
+          echo "count=$(wc -l < images.txt | tr -d ' ')" >> $GITHUB_OUTPUT
+          echo "## Container images to scan ($(wc -l < images.txt) unique)" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat images.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Install Trivy
+        if: steps.extract.outputs.count != '0'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq trivy
+          trivy --version
+
+      - name: Scan images with Trivy
+        if: steps.extract.outputs.count != '0'
+        run: |
+          failed=0
+          while IFS= read -r img; do
+            [[ -z "$img" ]] && continue
+            echo "--- $img ---"
+            if ! trivy image --exit-code 1 --severity CRITICAL,HIGH --format table --no-progress "$img" 2>&1; then
+              : $((failed += 1))
+            fi
+          done < images.txt
+          if [[ $failed -gt 0 ]]; then
+            echo "## Trivy image scan: $failed image(s) with CRITICAL/HIGH vulnerabilities" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          echo "## Trivy image scan: no CRITICAL/HIGH vulnerabilities" >> $GITHUB_STEP_SUMMARY
