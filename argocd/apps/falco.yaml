@@ -12,13 +12,11 @@ spec:
     helm:
       releaseName: falco
       values: |
-        # Recommended these days: eBPF driver (no kernel module build pain)
+        # Modern eBPF driver: built-in probe, no init container / driver download or compile (works on Talos)
         driver:
-          kind: ebpf
-        
-        # Explicitly tells Falco to run the eBPF setup in privileged mode
-        ebpf:
-          privileged: true
+          kind: modern_ebpf
+          loader:
+            enabled: false
 
         falcosidekick:
           enabled: true
