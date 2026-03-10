@@ -14,28 +14,31 @@ spec:
       values: |
         secret:
           create: true
-        pmm:
-          adminPassword: "CHANGE-ME-TO-A-STRONG-PASSWORD"
-
-          resources:
-            requests:
-              memory: "2Gi"
-              cpu: "500m"
-            limits:
-              memory: "4Gi"
-
-        probes:
-          startupProbe:
-            failureThreshold: 60
-            periodSeconds: 15
-
+          pmm_password: "CHANGE-ME-TO-A-STRONG-PASSWORD"
+        pmmResources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+        startupProbeConf:
+          failureThreshold: 60
+          periodSeconds: 15
         service:
           type: NodePort
-          nodePort: 30970
-
-        persistence:
-          enabled: true
-          size: 5Gi
+          ports:
+            - port: 443
+              targetPort: https
+              protocol: TCP
+              name: https
+              nodePort: 30970
+            - port: 80
+              targetPort: http
+              protocol: TCP
+              name: http
+              nodePort: 30971
+        # storage.size intentionally not set: StatefulSet volumeClaimTemplates
+        # are immutable; existing PVC is 10Gi. Overriding would break ArgoCD sync.
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
