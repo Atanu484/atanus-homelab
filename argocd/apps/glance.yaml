@@ -5,43 +5,43 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://bjw-s-labs.github.io/helm-charts/
-    chart: app-template
-    targetRevision: 4.6.2
-    helm:
-      releaseName: glance
-      values: |
-        controllers:
-          main:
-            containers:
-              main:
-                image:
-                  repository: glanceapp/glance
-                  tag: latest
-                ports:
-                  - name: http
-                    containerPort: 8080
+  sources:
+    - repoURL: https://bjw-s-labs.github.io/helm-charts/
+      chart: app-template
+      targetRevision: 4.6.2
+      helm:
+        releaseName: glance
+        values: |
+          controllers:
+            main:
+              containers:
+                main:
+                  image:
+                    repository: glanceapp/glance
+                    tag: latest
+                  ports:
+                    - name: http
+                      containerPort: 8080
 
-        service:
-          main:
-            controller: main
-            type: NodePort
-            ports:
-              http:
-                port: 8080
-                nodePort: 31030
+          service:
+            main:
+              controller: main
+              type: NodePort
+              ports:
+                http:
+                  port: 8080
+                  nodePort: 31030
 
-        persistence:
-          config:
-            enabled: true
-            type: persistentVolumeClaim
-            storageClass: longhorn
-            accessMode: ReadWriteOnce
-            size: 2Gi
-            globalMounts:
-              - path: /app/config
-
+          persistence:
+            config:
+              enabled: true
+              type: persistentVolumeClaim
+              existingClaim: glance
+              globalMounts:
+                - path: /app/config
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/glance-manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: glance
@@ -51,3 +51,4 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - Replace=true

@@ -1,0 +1,16 @@
+# PVC for Glance config; kept in Git so multi-source app doesn't prune it when using existingClaim.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: glance
+  namespace: glance
+  labels:
+    app.kubernetes.io/name: glance
+    app.kubernetes.io/instance: glance
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
