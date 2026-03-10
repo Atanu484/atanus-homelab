@@ -1,15 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "repositories": ["Atanu484/atanus-homelab"],
+  "extends": ["config:recommended"],
   "dependencyDashboard": true,
+  "gitAuthor": "Renovate Bot <Atanu484@users.noreply.github.com>",
   "kubernetes": {
-    "fileMatch": ["argocd/apps/.+\\.yaml$"]
+    "managerFilePatterns": ["argocd/apps/.+\\.yaml$"]
   },
   "argocd": {
-    "fileMatch": ["argocd/apps/.+\\.yaml$"]
+    "managerFilePatterns": ["argocd/apps/.+\\.yaml$"]
   },
   "packageRules": [
     {
