@@ -30,7 +30,8 @@ spec:
             containers:
               main:
                 image:
-                  repository: archiveteam/warrior-dockerfile
+                  # Use Archive Team mirror (has working Wget+At); Docker Hub image breaks "No usable Wget+At found"
+                  repository: atdr.meo.ws/archiveteam/warrior-dockerfile
                   tag: latest
 
                 ports:
