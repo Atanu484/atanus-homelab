@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: glance
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://bjw-s-labs.github.io/helm-charts/
+      chart: app-template
+      targetRevision: 4.6.2
+      helm:
+        releaseName: glance
+        values: |
+          controllers:
+            main:
+              containers:
+                main:
+                  image:
+                    repository: glanceapp/glance
+                    tag: latest
+                  ports:
+                    - name: http
+                      containerPort: 8080
+
+          service:
+            main:
+              controller: main
+              type: NodePort
+              ports:
+                http:
+                  port: 8080
+                  nodePort: 31030
+
+          persistence:
+            config:
+              enabled: true
+              type: persistentVolumeClaim
+              existingClaim: glance
+              globalMounts:
+                - path: /app/config
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/glance-manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: glance
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
