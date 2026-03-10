@@ -1,0 +1,42 @@
+# Argo CD self-management: this Application deploys Argo CD from the official Helm chart.
+# Once root-app syncs this file, Argo CD will manage its own workloads (server, repo-server,
+# application-controller, redis). Your other Application resources (root-app, cert-manager, etc.)
+# remain owned by root-app. To adopt an existing manual install: ensure your install matches
+# the chart's resource names (e.g. argocd-application-controller, argocd-server) or remove the
+# old install before syncing. Tune settings via the values block below or move to a values file.
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argo-cd
+    targetRevision: 9.4.10
+    helm:
+      releaseName: argocd
+      values: |
+        # Minimal values; add your customizations (ingress, resources, replicas, etc.) here.
+        # If you had repo credentials or custom config, migrate them into these values or
+        # a separate Secret and reference via extraVolumes/extraVolumeMounts.
+        server:
+          replicaCount: 1
+        repoServer:
+          replicaCount: 1
+        controller:
+          replicaCount: 1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true

@@ -122,9 +122,12 @@ atanus-homelab/
 ├── argocd/
 │   ├── root-app.yaml       # bootstrap — apply this once to get everything else
 │   └── apps/               # one file per app (includes trivy-operator for in-cluster scanning)
+│       └── argocd.yaml     # Argo CD self-management (Argo deploys itself from Helm)
 ├── .github/workflows/      # CI: Renovate (daily), Trivy (push/PR + weekly)
 ├── coredns.yaml            # custom CoreDNS config
 └── renovate.json           # Renovate config
 ```
 
 The whole thing is driven by ArgoCD's App-of-Apps pattern. You apply `root-app.yaml` once, and ArgoCD takes it from there — syncing, pruning, and healing automatically. Adding a new app is just dropping a new file in `argocd/apps/`.
+
+**Argo CD self-management:** The `argocd` app in `argocd/apps/argocd.yaml` deploys Argo CD from the official Helm chart so Argo CD manages its own workloads (server, repo-server, controller, redis). After you push this file, sync the root-app; it will create the `argocd` Application, which then syncs the chart. If you had a manual install with customizations, add them to the `values` block in that file (or use a values file) before syncing.
