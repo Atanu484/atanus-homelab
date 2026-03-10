@@ -18,6 +18,14 @@ spec:
           loader:
             enabled: false
 
+        # Skip falcoctl artifact install/follow (avoids TLS fetch to falcosecurity.github.io; use built-in rules)
+        falcoctl:
+          artifact:
+            install:
+              enabled: false
+            follow:
+              enabled: false
+
         falcosidekick:
           enabled: true
           webui:
