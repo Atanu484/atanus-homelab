@@ -26,6 +26,7 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 | App | What it does |
 |-----|-------------|
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/argo-cd.png" width="18"> [ArgoCD](https://argo-cd.readthedocs.io/) | Watches this repo and keeps the cluster in sync |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cilium.png" width="18"> [Cilium](https://cilium.io/) | eBPF-based CNI — networking, network policy, and Hubble observability |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png" width="18"> [Traefik](https://traefik.io/) | Handles all ingress and terminates TLS |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cert-manager.png" width="18"> [cert-manager](https://cert-manager.io/) | Auto-renews TLS certs, forget it exists |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" width="18"> [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) | Lets me commit encrypted secrets to Git safely |
@@ -47,6 +48,7 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grafana.png" width="18"> [Grafana](https://grafana.com/) | Where I actually look at all the metrics |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/loki.png" width="18"> [Loki](https://grafana.com/oss/loki/) | Log aggregation, pairs with Grafana |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/alloy.png" width="18"> [Grafana Alloy](https://grafana.com/oss/alloy-opentelemetry-collector/) | Ships logs and traces to Loki/Tempo |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/fluent-bit.png" width="18"> [Fluent Bit](https://fluentbit.io/) | Lightweight log processor and forwarder |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/victoriametrics.png" width="18"> [VictoriaMetrics](https://victoriametrics.com/) | Long-term metrics storage |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/opensearch.png" width="18"> [OpenSearch](https://opensearch.org/) + Dashboards | Log search when Loki isn't enough |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/uptime-kuma.png" width="18"> [Uptime Kuma](https://github.com/louislam/uptime-kuma) | Keeps an eye on all my services |
@@ -85,6 +87,8 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/wakapi.png" width="18"> [Wakapi](https://wakapi.dev/) | Tracks how long I spend in each project/language |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/myspeed.png" width="18"> [MySpeed](https://myspeed.dev/) | Logs internet speed over time, useful for ISP complaints |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" width="18"> [Vesta](https://github.com/vesta-finance/vesta-finance) | Finance tracking |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kanboard.png" width="18"> [Kanboard](https://kanboard.org/) | Kanban project management |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/syncthing.png" width="18"> [Syncthing](https://syncthing.net/) | Continuous peer-to-peer file sync across devices |
 
 ### Media
 
@@ -130,4 +134,4 @@ atanus-homelab/
 
 The whole thing is driven by ArgoCD's App-of-Apps pattern. You apply `root-app.yaml` once, and ArgoCD takes it from there — syncing, pruning, and healing automatically. Adding a new app is just dropping a new file in `argocd/apps/`.
 
-**Argo CD self-management:** The `argocd` app in `argocd/apps/argocd.yaml` deploys Argo CD from the official Helm chart so Argo CD manages its own workloads (server, repo-server, controller, redis). After you push this file, sync the root-app; it will create the `argocd` Application, which then syncs the chart. If you had a manual install with customizations, add them to the `values` block in that file (or use a values file) before syncing.
+**Argo CD self-management:** The `argocd` app in `argocd/apps/argocd.yaml` deploys Argo CD from the official Helm chart so Argo CD manages its own workloads (server, repo-server, controller, redis). That file is also the **GitOps export of manual config**: server NodePort (30110/30111), `argocd-cm` (url, timeouts, resource exclusions for Cilium/Kyverno/cert-manager, ignore diffs), `argocd-cmd-params-cm` (e.g. leader election), and `argocd-rbac-cm` (policy, scopes). Repo credentials (private Git repos) and the admin password stay in-cluster in Secrets; use Sealed Secrets or document them locally if you need to recreate. After you push, sync the root-app so it creates the `argocd` Application, which then syncs the chart.
