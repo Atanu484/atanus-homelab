@@ -1,6 +1,6 @@
 # Trivy: scan Kubernetes manifests and repo for misconfigs, secrets, and (optionally) container image refs.
 # Complements in-cluster Trivy Operator (argocd/apps/trivy-operator.yaml).
-# Results: table in Actions log; SARIF in Security tab (enable Code scanning in repo settings if needed).
+# Reports: Security → Code scanning (SARIF); run's Artifacts (downloadable); table in job logs.
 name: Trivy
 on:
   push:
@@ -42,6 +42,31 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-config.sarif"
+      - name: Upload Trivy config report (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-config-report
+          path: trivy-config.sarif
+          if-no-files-found: ignore
+      - name: Vulnerability summary (visible on run)
+        run: |
+          if [ -f trivy-config.sarif ]; then
+            CRITICAL=$(jq '[.runs[].results[]? | select(.level == "error")] | length' trivy-config.sarif 2>/dev/null || echo 0)
+            HIGH=$(jq '[.runs[].results[]? | select(.level == "warning")] | length' trivy-config.sarif 2>/dev/null || echo 0)
+            TOTAL=$((CRITICAL + HIGH))
+            echo "## Trivy config scan" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "|----------|------:|" >> $GITHUB_STEP_SUMMARY
+            echo "| Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| High     | $HIGH |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Total** | **$TOTAL** |" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "See **Security → Code scanning** for details. Download **trivy-config-report** artifact for SARIF." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## Trivy config scan" >> $GITHUB_STEP_SUMMARY
+            echo "No SARIF file (no findings or scan skipped)." >> $GITHUB_STEP_SUMMARY
+          fi
   trivy-fs:
     name: Trivy filesystem (secrets)
     runs-on: ubuntu-latest
@@ -56,3 +81,33 @@ jobs:
           format: "table"
           severity: "CRITICAL,HIGH"
           exit-code: "0"   # set to "1" to fail the workflow on findings
+      - name: Run Trivy filesystem (JSON for artifact)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "json"
+          output: "trivy-fs.json"
+          severity: "CRITICAL,HIGH"
+          exit-code: "0"
+      - name: Upload Trivy fs report (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-fs-report
+          path: trivy-fs.json
+          if-no-files-found: ignore
+      - name: Vulnerability summary (visible on run)
+        if: hashFiles('trivy-fs.json') != ''
+        run: |
+          CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-fs.json 2>/dev/null || echo 0)
+          HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-fs.json 2>/dev/null || echo 0)
+          SECRETS=$(jq '[.Results[]?.Secrets[]?] | length' trivy-fs.json 2>/dev/null || echo 0)
+          echo "## Trivy filesystem scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Finding   | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|------:|" >> $GITHUB_STEP_SUMMARY
+          echo "| Critical  | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+          echo "| High      | $HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "| Secrets   | $SECRETS |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Download **trivy-fs-report** artifact for full JSON." >> $GITHUB_STEP_SUMMARY
