@@ -30,7 +30,7 @@ spec:
             ports:
               http:
                 port: 80
-                nodePort: 31130 # Access ntfy GUI/API here
+                nodePort: 31130
 
         persistence:
           cache:

@@ -14,7 +14,7 @@ spec:
       values: |
         service:
           type: NodePort
-          nodePort: 31070 # Access the Portainer GUI here (HTTP)
+          nodePort: 31070
         tls:
           force: false
         persistence:

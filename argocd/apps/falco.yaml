@@ -12,13 +12,11 @@ spec:
     helm:
       releaseName: falco
       values: |
-        # Modern eBPF driver: built-in probe, no init container / driver download or compile (works on Talos)
         driver:
           kind: modern_ebpf
           loader:
             enabled: false
 
-        # Skip falcoctl artifact install/follow (avoids TLS fetch to falcosecurity.github.io; use built-in rules)
         falcoctl:
           artifact:
             install:
@@ -26,7 +24,6 @@ spec:
             follow:
               enabled: false
 
-        # Avoid loading config.d (duplicate container plugin); main falco.yaml has container plugin from collectors
         falco:
           config_files: []
 
@@ -47,7 +44,6 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-    # Instructs ArgoCD to label the namespace on creation to bypass PSA baseline
     managedNamespaceMetadata:
       labels:
         pod-security.kubernetes.io/enforce: privileged

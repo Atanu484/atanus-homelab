@@ -20,10 +20,10 @@ spec:
                   repository: ghcr.io/paperless-ngx/paperless-ngx
                   tag: latest
                 env:
-                  PAPERLESS_URL: "http://<YOUR_NODE_IP>:31090" # Update this later
+                  PAPERLESS_URL: "http://<YOUR_NODE_IP>:31090"
                 ports:
                   - name: http
-                    containerPort: 8000 # Internal GUI Port
+                    containerPort: 8000
 
         service:
           main:
@@ -31,7 +31,7 @@ spec:
             ports:
               http:
                 port: 8000
-                nodePort: 31090 # Access the Paperless GUI here
+                nodePort: 31090
 
         persistence:
           data:

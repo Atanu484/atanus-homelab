@@ -1,6 +1,3 @@
-# Trivy Operator: vulnerability + config scanning for all workloads.
-# Scans container images (CVEs) and Kubernetes resources (misconfig, secrets).
-# Reports as CRDs: VulnerabilityReport, ConfigAuditReport, etc. — view with kubectl or a dashboard.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,10 +12,10 @@ spec:
     helm:
       releaseName: trivy-operator
       values: |
-        targetNamespaces: ""   # all namespaces
+        targetNamespaces: ""
         excludeNamespaces: "kube-system,trivy-system,kube-public"
         trivy:
-          ignoreUnfixed: true   # only report vulnerabilities with fixes available
+          ignoreUnfixed: true
   destination:
     server: https://kubernetes.default.svc
     namespace: trivy-system

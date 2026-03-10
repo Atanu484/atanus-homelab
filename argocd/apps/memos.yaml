@@ -29,7 +29,7 @@ spec:
             ports:
               http:
                 port: 5230
-                nodePort: 31120 # Access Memos GUI here
+                nodePort: 31120
 
         persistence:
           data:

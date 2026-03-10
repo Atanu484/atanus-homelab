@@ -31,11 +31,9 @@ spec:
             - ReadWriteOnce
           size: 10Gi
 
-        # Disable HA postgres
         postgresql-ha:
           enabled: false
 
-        # Postgres: use bitnamilegacy image with a known-good tag (chart default may not pull)
         postgresql:
           enabled: true
           image:
@@ -47,7 +45,6 @@ spec:
             storageClass: longhorn
             size: 10Gi
 
-        # Disable valkey-cluster for single-pod; use in-memory cache/session/level queue
         valkey-cluster:
           enabled: false
 
@@ -63,8 +60,6 @@ spec:
               HOST: gitea-postgresql:5432
               NAME: gitea
               USER: gitea
-              # Leave password handling to the chart wiring (it uses the postgresql secret)
-              # Do NOT hardcode unless you know you want to.
             cache:
               ADAPTER: memory
             session:

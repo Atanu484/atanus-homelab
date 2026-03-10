@@ -1,4 +1,3 @@
-# PostgreSQL for Keycloak (Bitnami). Deploy before Keycloak.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:

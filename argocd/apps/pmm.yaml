@@ -16,8 +16,7 @@ spec:
           create: true
         pmm:
           adminPassword: "CHANGE-ME-TO-A-STRONG-PASSWORD"
-          
-          # Give PMM explicit resources so it initializes faster
+
           resources:
             requests:
               memory: "2Gi"
@@ -25,7 +24,6 @@ spec:
             limits:
               memory: "4Gi"
 
-        # Tell Kubernetes to wait up to 15 minutes before killing the pod
         probes:
           startupProbe:
             failureThreshold: 60

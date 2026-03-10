@@ -20,8 +20,6 @@ spec:
               securityContext:
                 fsGroup: 1000
                 fsGroupChangePolicy: "OnRootMismatch"
-              # Avoid DNS search domain (e.g. homenetwork.com) so warriorhq.archiveteam.org
-              # resolves to the real server, not warriorhq.archiveteam.org.homenetwork.com
               dnsConfig:
                 options:
                   - name: ndots
@@ -30,7 +28,6 @@ spec:
             containers:
               main:
                 image:
-                  # Use Archive Team mirror (has working Wget+At); Docker Hub image breaks "No usable Wget+At found"
                   repository: atdr.meo.ws/archiveteam/warrior-dockerfile
                   tag: latest
 

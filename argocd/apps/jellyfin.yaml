@@ -32,7 +32,6 @@ spec:
           env:
             - name: TZ
               value: "Europe/Tallinn"
-            # linuxserver-style IDs (optional but usually recommended)
             - name: PUID
               value: "1000"
             - name: PGID

@@ -21,7 +21,7 @@ spec:
                   tag: latest
                 ports:
                   - name: http
-                    containerPort: 8081 # Internal GUI Port
+                    containerPort: 8081
 
         service:
           main:
@@ -29,7 +29,7 @@ spec:
             ports:
               http:
                 port: 8081
-                nodePort: 31100 # Access the MeTube GUI here
+                nodePort: 31100
 
         persistence:
           downloads:

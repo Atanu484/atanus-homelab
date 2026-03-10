@@ -1,7 +1,3 @@
-# Renovate — automatic dependency PRs.
-# Runs in GitHub Actions (see .github/workflows/renovate.yml); in-cluster cronjob is suspended.
-# Add repo secret: RENOVATE_TOKEN = GitHub PAT with repo scope (Settings → Secrets → Actions).
-# Optional: keep in-cluster secret for local runs: kubectl create secret generic renovate-secrets -n renovate --from-literal=RENOVATE_TOKEN=$(cat ~/.renovate-token)
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -34,7 +30,7 @@ spec:
         cronjob:
           schedule: "0 0 * * *"
           concurrencyPolicy: Forbid
-          suspend: true   # Run Renovate in GitHub Actions instead (see .github/workflows/renovate.yml)
+          suspend: true
 
   destination:
     server: https://kubernetes.default.svc

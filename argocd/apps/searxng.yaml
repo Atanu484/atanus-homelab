@@ -29,7 +29,7 @@ spec:
             ports:
               http:
                 port: 8080
-                nodePort: 31160 # Access Searxng GUI here
+                nodePort: 31160
 
         persistence:
           config:

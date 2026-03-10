@@ -13,14 +13,13 @@ spec:
       releaseName: alloy
       values: |
         alloy:
-          # This configures Alloy to collect Kubernetes logs and send them to Loki
           configMap:
             create: true
         controller:
           type: daemonset
         service:
           type: NodePort
-          nodePort: 31220 # Access the Alloy internal UI here
+          nodePort: 31220
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

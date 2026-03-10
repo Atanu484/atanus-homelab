@@ -1,11 +1,8 @@
-# Self-hosted Renovate via GitHub Actions (avoids homelab network/TLS issues).
-# Runs on GitHub's runners; uses repo secret RENOVATE_TOKEN (PAT with repo scope).
-# Config: renovate.json at repo root.
 name: Renovate
 on:
   schedule:
-    - cron: '0 0 * * *'   # Daily at 00:00 UTC
-  workflow_dispatch:      # Run manually from Actions tab
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 jobs:
   renovate:
     runs-on: ubuntu-latest

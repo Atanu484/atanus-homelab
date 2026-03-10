@@ -29,7 +29,7 @@ spec:
             ports:
               http:
                 port: 5216
-                nodePort: 31180 # Access MySpeed GUI here
+                nodePort: 31180
 
         persistence:
           data:
