@@ -26,6 +26,10 @@ spec:
             follow:
               enabled: false
 
+        # Avoid loading config.d (duplicate container plugin); main falco.yaml has container plugin from collectors
+        falco:
+          config_files: []
+
         falcosidekick:
           enabled: true
           webui:
