@@ -49,6 +49,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: uptime-kuma
+                name: uptime-kuma-web
                 port:
                   number: 3001
