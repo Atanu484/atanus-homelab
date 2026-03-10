@@ -45,6 +45,14 @@ spec:
           options:
             - name: ndots
               value: "1"
+
+        nodeSelector:
+          kubernetes.io/hostname: talos-puj-wwy
+
+        tolerations:
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
   destination:
     server: https://kubernetes.default.svc
     namespace: minecraft
