@@ -29,31 +29,28 @@ spec:
           storageClass: longhorn
           accessModes:
             - ReadWriteOnce
-          size: 3Gi
+          size: 10Gi
 
         # Disable HA postgres
         postgresql-ha:
           enabled: false
 
-        # Enable Postgres subchart
+        # Postgres: use bitnamilegacy image with a known-good tag (chart default may not pull)
         postgresql:
           enabled: true
           image:
             registry: docker.io
-            repository: bitnami/postgresql
-            # IMPORTANT: your cluster said "-r23" is NOT FOUND
-            # Start with -r0 (commonly exists) and adjust if needed.
-            tag: 16.3.0-debian-12-r0
+            repository: bitnamilegacy/postgresql
+            tag: "16.6.0"
           persistence:
             enabled: true
             storageClass: longhorn
-            size: 3Gi
+            size: 10Gi
 
-        # Disable redis-cluster to avoid ImagePullBackOff ("tag not found")
-        redis-cluster:
+        # Disable valkey-cluster for single-pod; use in-memory cache/session/level queue
+        valkey-cluster:
           enabled: false
 
-        # Force Gitea to use in-cluster Postgres service and avoid Redis dependency
         gitea:
           admin:
             username: admin
