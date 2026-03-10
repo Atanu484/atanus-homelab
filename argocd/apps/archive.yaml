@@ -20,6 +20,12 @@ spec:
               securityContext:
                 fsGroup: 1000
                 fsGroupChangePolicy: "OnRootMismatch"
+              # Avoid DNS search domain (e.g. homenetwork.com) so warriorhq.archiveteam.org
+              # resolves to the real server, not warriorhq.archiveteam.org.homenetwork.com
+              dnsConfig:
+                options:
+                  - name: ndots
+                    value: "1"
 
             containers:
               main:
