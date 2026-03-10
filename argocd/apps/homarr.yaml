@@ -62,3 +62,25 @@ type: Opaque
 stringData:
   # Must be 64-char hex (e.g. openssl rand -hex 32). Change breaks existing encrypted DB.
   db-encryption-key: "4d3b0a81aa5df20b67924fadaf6759a62143f561c058a050b2f03c40b07234da"
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homarr
+  namespace: homarr
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: homarr.atanuslab.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homarr
+                port:
+                  number: 7575

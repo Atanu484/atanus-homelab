@@ -53,3 +53,25 @@ spec:
       port: 80
       targetPort: http
       nodePort: 31010
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: goldilocks
+  namespace: goldilocks
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: goldilocks.atanuslab.xyz
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: goldilocks-dashboard
+                port:
+                  number: 80
