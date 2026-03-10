@@ -26,6 +26,10 @@ spec:
         # a separate Secret and reference via extraVolumes/extraVolumeMounts.
         server:
           replicaCount: 1
+          service:
+            type: NodePort
+            nodePortHttp: 30110
+            nodePortHttps: 30111
         repoServer:
           replicaCount: 1
         controller:
