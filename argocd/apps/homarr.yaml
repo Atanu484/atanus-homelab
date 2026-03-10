@@ -12,6 +12,9 @@ spec:
     helm:
       releaseName: homarr
       values: |
+        replicaCount: 1
+        strategyType: Recreate
+
         env:
           TZ: "Europe/Tallinn"
 
@@ -25,6 +28,18 @@ spec:
             enabled: true
             storageClassName: longhorn
             size: 1Gi
+
+        # Give internal Redis and app time to start
+        livenessProbe:
+          initialDelaySeconds: 45
+        readinessProbe:
+          initialDelaySeconds: 45
+
+        # Use existing secret for DB encryption (required; key must be 64-char hex)
+        envSecrets:
+          dbEncryption:
+            existingSecret: db-encryption
+            key: db-encryption-key
 
   destination:
     server: https://kubernetes.default.svc
@@ -44,4 +59,5 @@ metadata:
   namespace: homarr
 type: Opaque
 stringData:
-  db-encryption-key: "CHANGE_ME_TO_A_LONG_RANDOM_STRING"
+  # Must be 64-char hex (e.g. openssl rand -hex 32). Change breaks existing encrypted DB.
+  db-encryption-key: "4d3b0a81aa5df20b67924fadaf6759a62143f561c058a050b2f03c40b07234da"
