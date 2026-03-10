@@ -5,40 +5,42 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://percona.github.io/percona-helm-charts
-    chart: pmm
-    targetRevision: 1.5.1
-    helm:
-      releaseName: pmm
-      values: |
-        secret:
-          create: true
-          pmm_password: "CHANGE-ME-TO-A-STRONG-PASSWORD"
-        pmmResources:
-          requests:
-            memory: "2Gi"
-            cpu: "500m"
-          limits:
-            memory: "4Gi"
-        startupProbeConf:
-          failureThreshold: 60
-          periodSeconds: 15
-        service:
-          type: NodePort
-          ports:
-            - port: 443
-              targetPort: https
-              protocol: TCP
-              name: https
-              nodePort: 30970
-            - port: 80
-              targetPort: http
-              protocol: TCP
-              name: http
-              nodePort: 30971
-        # storage.size intentionally not set: StatefulSet volumeClaimTemplates
-        # are immutable; existing PVC is 10Gi. Overriding would break ArgoCD sync.
+  sources:
+    - repoURL: https://percona.github.io/percona-helm-charts
+      chart: pmm
+      targetRevision: 1.5.1
+      helm:
+        releaseName: pmm
+        values: |
+          secret:
+            create: false
+          pmmResources:
+            requests:
+              memory: "2Gi"
+              cpu: "500m"
+            limits:
+              memory: "4Gi"
+          startupProbeConf:
+            failureThreshold: 60
+            periodSeconds: 15
+          service:
+            type: NodePort
+            ports:
+              - port: 443
+                targetPort: https
+                protocol: TCP
+                name: https
+                nodePort: 30970
+              - port: 80
+                targetPort: http
+                protocol: TCP
+                name: http
+                nodePort: 30971
+          # storage.size intentionally not set: StatefulSet volumeClaimTemplates
+          # are immutable; existing PVC is 10Gi. Overriding would break ArgoCD sync.
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/pmm-manifests
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
