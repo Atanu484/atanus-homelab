@@ -19,9 +19,10 @@ spec:
           TZ: "Europe/Tallinn"
 
         service:
-          main:
-            type: NodePort
-            nodePort: 31040
+          type: NodePort
+          ports:
+            app:
+              nodePort: 31045
 
         persistence:
           homarrDatabase:
