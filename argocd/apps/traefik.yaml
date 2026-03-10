@@ -49,6 +49,7 @@ spec:
         additionalArguments:
           - "--providers.kubernetescrd=true"
           - "--providers.kubernetesingress=true"
+          - "--providers.kubernetesCRD.allowCrossNamespace=true"
 
   destination:
     server: https://kubernetes.default.svc
@@ -59,3 +60,28 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: traefik-basicauth
+  namespace: traefik
+spec:
+  encryptedData:
+    users: AgCGZbpuMFiuukR27phjRuGezpeYit0mxFSMJsTe7gtpNPrk1F4ml8ZjFkeZPaUa+14dkvapKfFwzmGYVbXJ/MYy+QbY+oIm6Kz1iIFJWBAvd1FEzJoOM9Ul+tXqKyBnBYZ3LuqPd0+ObXtdUe4f61gou60Sb0FwLG2SbIORqCtuT3+LSxgCFvbREVEmWhizbjUlAuMfOVhthHZrmJFOrEM4jUbFXZm6kPreHf81srngZDh+S/SJbxXWsZb5x3tg4dCgxKD2jKhICpHaeNXS1Mn5Mom1JptNZVw/CFXl6vynRhw43sCID/1TCRM3xfzWNPf9CxzCQQZoVduZhKEO27jskaGIRuOcaT4lTfoBJTm/JfApTN5I4Zu15gMrNh5pMteSH0VmravDbONDZ6t1q5SNAqWh2hjzlHvZis4F/HDmrlCzjbYmJQ+lmheUGofbyHsOJN0yuthTVmrzLABFF556E/sBQnYFx6sJ6QqyaCNCU7s4j0IXrWxXeUgCBVt+0ZFncSWdhjdLicJ5EMJZ3gnV3rOsGXbJOH77IYX/ghiLkJtIFGYeKr1QaZB2m1+enIaQKQsTVSouL14wNbyLbpvOQuNvNGmlYmdnS94wiGKi/n8oIvtbJPDHyIAFUImEZ/ml2j53Vq4YP/1Xn4TIf8PGNN5abm9amhAje5VhjYqwohzncUrGDIl3FYms8QZNyfsd7hdnOP1HJKM66/MRznYQCB5wr9hfhl0u0yhKeDemCiKTE89xpMnK8W4KOfftrU/Lnb0LGhXHMI7YfG1U0Z+pMQcLqA==
+  template:
+    metadata:
+      name: traefik-basicauth
+      namespace: traefik
+    type: Opaque
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: basicauth
+  namespace: traefik
+spec:
+  basicAuth:
+    secret: traefik-basicauth
