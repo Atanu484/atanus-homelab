@@ -24,7 +24,7 @@ spec:
           nodePort: 31053
 
         serviceDns:
-          type: LoadBalancer
+          type: NodePort
 
         persistentVolumeClaim:
           enabled: true
