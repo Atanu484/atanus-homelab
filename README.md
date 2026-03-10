@@ -59,6 +59,7 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/keycloak.png" width="18"> [Keycloak](https://www.keycloak.org/) | SSO for everything — OIDC, SAML, the lot |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/vaultwarden.png" width="18"> [Vaultwarden](https://github.com/dani-garcia/vaultwarden) | Self-hosted Bitwarden, been using it for years |
 | <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" width="18"> [Falco](https://falco.org/) | Runtime security, alerts on sketchy syscalls |
+| <img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" width="18"> [Trivy](https://trivy.dev/) | Container & workload scanning (CVEs, misconfig, secrets); reports as CRDs + CI on this repo |
 
 ### Cluster Management
 
@@ -120,7 +121,8 @@ Everything is deployed through [ArgoCD](https://argo-cd.readthedocs.io/) using t
 atanus-homelab/
 ├── argocd/
 │   ├── root-app.yaml       # bootstrap — apply this once to get everything else
-│   └── apps/               # one file per app
+│   └── apps/               # one file per app (includes trivy-operator for in-cluster scanning)
+├── .github/workflows/      # CI: Renovate (daily), Trivy (push/PR + weekly)
 ├── coredns.yaml            # custom CoreDNS config
 └── renovate.json           # Renovate config
 ```
