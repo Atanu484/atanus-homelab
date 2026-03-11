@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: portainer
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://portainer.github.io/k8s/
+      chart: portainer
+      targetRevision: 239.0.2
+      helm:
+        releaseName: portainer
+        values: |
+          service:
+            type: NodePort
+            nodePort: 31070
+          tls:
+            force: false
+          persistence:
+            enabled: true
+            storageClass: longhorn
+            size: 5Gi
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/portainer
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: portainer
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

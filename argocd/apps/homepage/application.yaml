@@ -1,0 +1,50 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://jameswynn.github.io/helm-charts
+      chart: homepage
+      targetRevision: 2.1.0
+      helm:
+        releaseName: homepage
+        values: |
+          service:
+            main:
+              type: NodePort
+              ports:
+                http:
+                  port: 3000
+                  nodePort: 31000
+
+          persistence:
+            config:
+              enabled: true
+              type: pvc
+              storageClass: longhorn
+              accessMode: ReadWriteOnce
+              size: 2Gi
+
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+
+          podSecurityContext:
+            fsGroup: 1000
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/homepage
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homepage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

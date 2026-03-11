@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: uptime-kuma
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://charts.pascaliske.dev
+      chart: uptime-kuma
+      targetRevision: 3.0.0
+      helm:
+        releaseName: uptime-kuma
+        values: |
+          service:
+            type: NodePort
+          ports:
+            http:
+              nodePort: 30960
+
+          persistentVolumeClaim:
+            create: true
+            size: 5Gi
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/uptime-kuma
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

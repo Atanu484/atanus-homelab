@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: vaultwarden
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://guerzon.github.io/vaultwarden
+      chart: vaultwarden
+      targetRevision: 0.35.1
+      helm:
+        releaseName: vaultwarden
+        values: |
+          image:
+            repository: vaultwarden/server
+            tag: latest
+
+          domain: "https://vault.atanuslab.xyz"
+
+          service:
+            type: ClusterIP
+
+          storage:
+            enabled: true
+            size: 2Gi
+            class: longhorn
+            dataDir: /data
+
+          extraObjects:
+            - apiVersion: v1
+              kind: Service
+              metadata:
+                name: vaultwarden-nodeport
+                namespace: productivity
+                labels:
+                  app.kubernetes.io/name: vaultwarden
+                  app.kubernetes.io/instance: vaultwarden
+                  app.kubernetes.io/component: vaultwarden
+              spec:
+                type: NodePort
+                selector:
+                  app.kubernetes.io/name: vaultwarden
+                  app.kubernetes.io/instance: vaultwarden
+                  app.kubernetes.io/component: vaultwarden
+                ports:
+                  - name: http
+                    port: 80
+                    targetPort: 8080
+                    nodePort: 32080
+                    protocol: TCP
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/vaultwarden
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: productivity
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

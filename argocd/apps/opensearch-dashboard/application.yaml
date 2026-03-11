@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch-dashboards
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://opensearch-project.github.io/helm-charts
+      chart: opensearch-dashboards
+      targetRevision: 3.5.0
+      helm:
+        releaseName: opensearch-dashboards
+        values: |
+          opensearchHosts: "http://opensearch-cluster-master:9200"
+
+          config:
+            opensearch_dashboards.yml: |
+              server.host: "0.0.0.0"
+              server.port: 5601
+              opensearch.hosts: ["http://opensearch-cluster-master:9200"]
+              opensearch_security.enabled: false
+
+          startupProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+
+          readinessProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+
+          livenessProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          service:
+            type: NodePort
+            nodePort: 31240
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/opensearch-dashboard
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

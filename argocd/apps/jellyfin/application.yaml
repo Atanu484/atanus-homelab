@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jellyfin
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://jellyfin.github.io/jellyfin-helm
+      chart: jellyfin
+      targetRevision: 2.7.0
+      helm:
+        releaseName: jellyfin
+        values: |
+          image:
+            repository: docker.io/jellyfin/jellyfin
+            tag: "10.9.11"
+            pullPolicy: IfNotPresent
+
+          deploymentStrategy:
+            type: Recreate
+
+          service:
+            type: NodePort
+            port: 8096
+            nodePort: 31050
+
+          # Official image works with fsGroup only; runAsUser/runAsGroup break LinuxServer init
+          podSecurityContext:
+            fsGroup: 1000
+          securityContext: {}
+
+          jellyfin:
+            env:
+              - name: TZ
+                value: "Europe/Tallinn"
+
+          persistence:
+            config:
+              enabled: true
+              size: 1Gi
+              storageClass: longhorn
+              accessMode: ReadWriteOnce
+            media:
+              enabled: true
+              type: pvc
+              size: 3Gi
+              storageClass: longhorn
+              accessMode: ReadWriteOnce
+
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: 2000m
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/jellyfin
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

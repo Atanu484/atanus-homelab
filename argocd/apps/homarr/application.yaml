@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homarr
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://homarr-labs.github.io/charts/
+      chart: homarr
+      targetRevision: 8.13.0
+      helm:
+        releaseName: homarr
+        values: |
+          replicaCount: 1
+          strategyType: Recreate
+
+          env:
+            TZ: "Europe/Tallinn"
+
+          service:
+            type: NodePort
+            ports:
+              app:
+                nodePort: 31045
+
+          persistence:
+            homarrDatabase:
+              enabled: true
+              storageClassName: longhorn
+              size: 1Gi
+
+          # Give internal Redis and app time to start
+          livenessProbe:
+            initialDelaySeconds: 45
+          readinessProbe:
+            initialDelaySeconds: 45
+
+          # Use existing secret for DB encryption (required; key must be 64-char hex)
+          envSecrets:
+            dbEncryption:
+              existingSecret: db-encryption
+              key: db-encryption-key
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      path: argocd/apps/homarr
+      directory:
+        exclude: 'application.yaml'
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: homarr
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

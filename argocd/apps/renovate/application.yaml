@@ -1,0 +1,45 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: renovate
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/renovatebot/helm-charts.git
+    path: charts/renovate
+    targetRevision: renovate-46.44.0
+    helm:
+      releaseName: renovate
+      values: |
+        envFrom:
+          - secretRef:
+              name: renovate-secrets
+
+        renovate:
+          config: |
+            {
+              "platform": "github",
+              "endpoint": "https://api.github.com/",
+              "repositories": ["Atanu484/atanus-homelab"],
+              "extends": ["config:recommended"],
+              "dependencyDashboard": true
+            }
+
+        cronjob:
+          schedule: "0 0 * * *"
+          concurrencyPolicy: Forbid
+          suspend: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: renovate
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
