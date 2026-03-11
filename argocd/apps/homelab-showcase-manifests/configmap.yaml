@@ -1,0 +1,759 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homelab-showcase-html
+  namespace: homelab-showcase
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Atanu Biswas — Personal homelab: bare-metal Kubernetes on Talos Linux, fully GitOps-driven with ArgoCD, hosting 30+ self-hosted services.">
+      <title>Atanu's Homelab</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+      <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+          --bg: #07091a;
+          --bg-card: #0c1028;
+          --bg-card-hover: #111530;
+          --border: rgba(99,102,241,0.15);
+          --border-hover: rgba(99,102,241,0.45);
+          --accent: #818cf8;
+          --accent2: #22d3ee;
+          --green: #4ade80;
+          --text: #e2e8f0;
+          --muted: #94a3b8;
+          --subtle: #475569;
+          --font: 'Inter', system-ui, -apple-system, sans-serif;
+          --mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+        html { scroll-behavior: smooth; }
+        body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; overflow-x: hidden; }
+
+        /* Grid background */
+        .bg-grid {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background-image: linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px);
+          background-size: 60px 60px; pointer-events: none; z-index: 0;
+        }
+        .bg-glow {
+          position: fixed; top: -10%; left: 50%; transform: translateX(-50%);
+          width: 900px; height: 700px;
+          background: radial-gradient(ellipse at center, rgba(99,102,241,0.1) 0%, transparent 65%);
+          pointer-events: none; z-index: 0;
+        }
+
+        /* NAV */
+        nav {
+          position: sticky; top: 0; z-index: 100;
+          background: rgba(7,9,26,0.85); backdrop-filter: blur(20px);
+          border-bottom: 1px solid var(--border);
+        }
+        .nav-inner {
+          max-width: 1200px; margin: 0 auto; padding: 0 24px;
+          height: 60px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-brand {
+          display: flex; align-items: center; gap: 10px;
+          font-weight: 700; font-size: 0.95rem; color: var(--text);
+          text-decoration: none; letter-spacing: -0.01em; font-family: var(--mono);
+        }
+        .brand-pulse {
+          width: 8px; height: 8px; background: var(--green); border-radius: 50%;
+          animation: pulse 2s ease-in-out infinite; box-shadow: 0 0 8px var(--green);
+        }
+        @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+        .nav-links { display: flex; gap: 4px; align-items: center; }
+        .nav-links a {
+          color: var(--muted); text-decoration: none; font-size: 0.875rem;
+          padding: 6px 14px; border-radius: 8px; transition: all 0.2s; font-weight: 500;
+        }
+        .nav-links a:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+        .nav-links .btn-gh {
+          background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.25);
+          color: var(--accent);
+        }
+        .nav-links .btn-gh:hover { background: rgba(129,140,248,0.2); color: #c7d2fe; }
+
+        /* HERO */
+        .hero {
+          position: relative; z-index: 1;
+          max-width: 1200px; margin: 0 auto;
+          padding: 80px 24px 60px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center;
+        }
+        @media (max-width: 900px) { .hero { grid-template-columns: 1fr; padding: 50px 20px 40px; } }
+        .hero-badge {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.25);
+          color: var(--green); font-size: 0.75rem; font-weight: 700;
+          padding: 5px 14px; border-radius: 999px; text-transform: uppercase;
+          letter-spacing: 0.08em; margin-bottom: 22px;
+        }
+        .badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        h1 {
+          font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800;
+          line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 20px; color: #f8fafc;
+        }
+        .gradient-text {
+          background: linear-gradient(135deg, var(--accent), var(--accent2));
+          -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .hero-desc { font-size: 1.05rem; color: var(--muted); line-height: 1.75; margin-bottom: 32px; max-width: 480px; }
+        .hero-stats { display: flex; gap: 32px; margin-bottom: 36px; }
+        .stat-num {
+          display: block; font-size: 1.9rem; font-weight: 800; font-family: var(--mono);
+          color: var(--accent); letter-spacing: -0.04em; line-height: 1;
+        }
+        .stat-label {
+          display: block; font-size: 0.72rem; color: var(--muted);
+          text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-top: 4px;
+        }
+        .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-primary {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: linear-gradient(135deg, #6366f1, #818cf8); color: white;
+          text-decoration: none; padding: 11px 22px; border-radius: 8px;
+          font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+          box-shadow: 0 4px 20px rgba(99,102,241,0.35);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,0.5); }
+        .btn-ghost {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: transparent; color: var(--muted); text-decoration: none;
+          padding: 11px 22px; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
+          border: 1px solid var(--border); transition: all 0.2s;
+        }
+        .btn-ghost:hover { color: var(--text); border-color: rgba(129,140,248,0.5); background: rgba(129,140,248,0.06); }
+
+        /* TERMINAL */
+        .terminal {
+          background: #080b1f; border: 1px solid rgba(99,102,241,0.22);
+          border-radius: 14px; overflow: hidden;
+          box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.08);
+        }
+        .terminal-header {
+          display: flex; align-items: center; gap: 6px;
+          padding: 12px 16px; background: rgba(255,255,255,0.025);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+        .terminal-title { font-family: var(--mono); font-size: 0.73rem; color: var(--subtle); margin-left: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .terminal-body { padding: 16px; font-family: var(--mono); font-size: 0.76rem; line-height: 1.65; }
+        .t-line { display: flex; gap: 0; padding: 2px 0; }
+        .t-ns { color: #94a3b8; width: 120px; flex-shrink: 0; }
+        .t-pod { color: #c4b5fd; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+        .t-ready { color: #6b7280; width: 50px; flex-shrink: 0; text-align: right; margin-right: 14px; }
+        .t-run { color: #4ade80; font-weight: 600; width: 70px; flex-shrink: 0; }
+        .t-age { color: #6b7280; }
+        .t-header { color: var(--muted); font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px; margin-bottom: 4px; }
+        .terminal-prompt { color: var(--accent); padding-top: 12px; opacity: 0.7; }
+        .cursor { display: inline-block; width: 7px; height: 13px; background: var(--accent2); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 2px; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+        /* SECTIONS */
+        section { position: relative; z-index: 1; }
+        .section-inner { max-width: 1200px; margin: 0 auto; padding: 72px 24px; }
+        .section-header { margin-bottom: 44px; }
+        .section-label {
+          display: inline-flex; align-items: center; gap: 8px;
+          font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.12em; color: var(--accent); margin-bottom: 12px;
+        }
+        .section-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); }
+        h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); font-weight: 700; color: #f8fafc; letter-spacing: -0.025em; margin-bottom: 10px; }
+        .section-desc { color: var(--muted); font-size: 1rem; max-width: 520px; line-height: 1.7; }
+
+        /* STACK */
+        .stack-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .stack-card {
+          background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+          padding: 16px 18px; display: flex; align-items: center; gap: 12px; transition: all 0.2s;
+        }
+        .stack-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-2px); }
+        .stack-icon { width: 34px; height: 34px; border-radius: 8px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); }
+        .stack-icon img { width: 28px; height: 28px; object-fit: contain; }
+        .stack-name { font-size: 0.875rem; font-weight: 600; color: var(--text); }
+        .stack-role { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+        /* GITOPS FLOW */
+        .flow-section { background: linear-gradient(135deg, rgba(129,140,248,0.04), rgba(34,211,238,0.03)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .flow-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0; }
+        .flow-step {
+          padding: 28px 28px; border-right: 1px solid var(--border); position: relative;
+          display: flex; flex-direction: column; gap: 10px;
+        }
+        .flow-step:last-child { border-right: none; }
+        @media (max-width: 768px) { .flow-step { border-right: none; border-bottom: 1px solid var(--border); } }
+        .flow-num {
+          font-family: var(--mono); font-size: 0.7rem; font-weight: 600;
+          color: var(--accent); background: rgba(129,140,248,0.1);
+          border: 1px solid rgba(129,140,248,0.2); border-radius: 4px;
+          padding: 2px 8px; display: inline-block; width: fit-content;
+        }
+        .flow-icon { font-size: 1.6rem; }
+        .flow-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+        .flow-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+        .flow-arrow {
+          position: absolute; right: -14px; top: 50%; transform: translateY(-50%);
+          color: var(--accent); font-size: 1.2rem; z-index: 2;
+          background: var(--bg); padding: 4px;
+        }
+
+        /* SERVICES */
+        .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+        .filter-btn {
+          background: transparent; border: 1px solid var(--border); color: var(--muted);
+          padding: 6px 18px; border-radius: 999px; font-size: 0.8rem; font-weight: 600;
+          cursor: pointer; transition: all 0.2s; font-family: var(--font);
+        }
+        .filter-btn:hover { border-color: rgba(129,140,248,0.35); color: var(--text); }
+        .filter-btn.active { background: rgba(129,140,248,0.12); border-color: rgba(129,140,248,0.5); color: var(--accent); }
+
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+        .service-card {
+          background: var(--bg-card); border: 1px solid var(--border);
+          border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px;
+          transition: all 0.25s; position: relative; overflow: hidden;
+        }
+        .service-card::before {
+          content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+          background: var(--cc); opacity: 0; transition: opacity 0.2s;
+        }
+        .service-card:hover { border-color: var(--border-hover); background: var(--bg-card-hover); transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.35); }
+        .service-card:hover::before { opacity: 1; }
+        .service-card.hidden { display: none; }
+        .card-top { display: flex; align-items: flex-start; gap: 12px; }
+        .svc-icon {
+          width: 42px; height: 42px; border-radius: 10px; overflow: hidden; flex-shrink: 0;
+          background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center;
+          border: 1px solid rgba(255,255,255,0.07);
+        }
+        .svc-icon img { width: 28px; height: 28px; object-fit: contain; }
+        .svc-icon .fallback { font-size: 1.2rem; }
+        .svc-meta { flex: 1; min-width: 0; }
+        .svc-name { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+        .svc-cat {
+          display: inline-block; font-size: 0.68rem; font-weight: 700;
+          padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.06em;
+          background: var(--cat-bg); color: var(--cc);
+        }
+        .svc-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+
+        /* Category color vars */
+        .c-platform  { --cc: #818cf8; --cat-bg: rgba(129,140,248,0.1); }
+        .c-storage    { --cc: #fbbf24; --cat-bg: rgba(251,191,36,0.1);  }
+        .c-observe    { --cc: #22d3ee; --cat-bg: rgba(34,211,238,0.1);  }
+        .c-security   { --cc: #f87171; --cat-bg: rgba(248,113,113,0.1); }
+        .c-mgmt       { --cc: #34d399; --cat-bg: rgba(52,211,153,0.1);  }
+        .c-apps       { --cc: #a78bfa; --cat-bg: rgba(167,139,250,0.1); }
+
+        /* FOOTER */
+        footer { position: relative; z-index: 1; border-top: 1px solid var(--border); }
+        .footer-inner {
+          max-width: 1200px; margin: 0 auto; padding: 32px 24px;
+          display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+        }
+        .footer-left { font-size: 0.85rem; color: var(--muted); }
+        .footer-left strong { color: var(--text); }
+        .footer-links { display: flex; gap: 20px; }
+        .footer-links a { font-size: 0.85rem; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+          .nav-links a:not(.btn-gh) { display: none; }
+          .hero-stats { gap: 20px; }
+          .stack-grid { grid-template-columns: repeat(2, 1fr); }
+          .flow-grid { grid-template-columns: 1fr; }
+          .services-grid { grid-template-columns: 1fr; }
+          .footer-inner { flex-direction: column; text-align: center; }
+          .flow-arrow { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="bg-grid"></div>
+      <div class="bg-glow"></div>
+
+      <!-- NAV -->
+      <nav>
+        <div class="nav-inner">
+          <a href="#" class="nav-brand">
+            <span class="brand-pulse"></span>
+            atanus-homelab
+          </a>
+          <div class="nav-links">
+            <a href="#stack">Stack</a>
+            <a href="#services">Services</a>
+            <a href="https://github.com/Atanu484/atanus-homelab" target="_blank" rel="noopener" class="btn-gh">GitHub ↗</a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div>
+          <div class="hero-badge"><span class="badge-dot"></span>All systems operational</div>
+          <h1>Self-hosted.<br>Git-driven.<br><span class="gradient-text">Always running.</span></h1>
+          <p class="hero-desc">
+            A bare-metal Kubernetes cluster at home running 30+ services entirely through GitOps.
+            No SSH. No manual <code style="font-family:var(--mono);font-size:0.9em;color:var(--accent2)">kubectl apply</code>.
+            Just push to Git and ArgoCD takes care of the rest.
+          </p>
+          <div class="hero-stats">
+            <div><span class="stat-num">30+</span><span class="stat-label">Services</span></div>
+            <div><span class="stat-num">100%</span><span class="stat-label">GitOps</span></div>
+            <div><span class="stat-num">v1.35</span><span class="stat-label">Kubernetes</span></div>
+          </div>
+          <div class="hero-cta">
+            <a href="#services" class="btn-primary">Explore Services ↓</a>
+            <a href="https://github.com/Atanu484/atanus-homelab" target="_blank" rel="noopener" class="btn-ghost">View Source on GitHub</a>
+          </div>
+        </div>
+
+        <!-- Terminal mockup -->
+        <div class="terminal">
+          <div class="terminal-header">
+            <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+            <span class="terminal-title">kubectl get pods -A --field-selector=status.phase=Running</span>
+          </div>
+          <div class="terminal-body">
+            <div class="t-line t-header"><span class="t-ns">NAMESPACE</span><span class="t-pod">NAME</span><span class="t-ready">READY</span><span class="t-run">STATUS</span><span class="t-age">AGE</span></div>
+            <div class="t-line"><span class="t-ns">argocd</span><span class="t-pod">argocd-server-d9b8f4c6b</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">monitoring</span><span class="t-pod">grafana-6c8f7b9d4-xk9f2</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">traefik</span><span class="t-pod">traefik-5d47c9b7f-mq8vp</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">longhorn-system</span><span class="t-pod">longhorn-manager-xk2p9</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">keycloak</span><span class="t-pod">keycloak-0</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">9d</span></div>
+            <div class="t-line"><span class="t-ns">jellyfin</span><span class="t-pod">jellyfin-7f4d6c8b9-r4ts2</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">gitea</span><span class="t-pod">gitea-0</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">loki</span><span class="t-pod">loki-0</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="t-line"><span class="t-ns">vaultwarden</span><span class="t-pod">vaultwarden-5c7d9b-np8lx</span><span class="t-ready">1/1</span><span class="t-run">Running</span><span class="t-age">14d</span></div>
+            <div class="terminal-prompt">$ <span class="cursor"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STACK SECTION -->
+      <section id="stack">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-label">Infrastructure</div>
+            <h2>How it's built</h2>
+            <p class="section-desc">Every layer chosen deliberately — from the OS up through GitOps to the application layer.</p>
+          </div>
+          <div class="stack-grid">
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/talos.png" alt="Talos" onerror="this.parentElement.innerHTML='🖥️'"></div>
+              <div><div class="stack-name">Talos Linux</div><div class="stack-role">OS — Immutable, no SSH</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" alt="K8s" onerror="this.parentElement.innerHTML='☸️'"></div>
+              <div><div class="stack-name">Kubernetes v1.35</div><div class="stack-role">Container orchestration</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/argo-cd.png" alt="ArgoCD" onerror="this.parentElement.innerHTML='🔄'"></div>
+              <div><div class="stack-name">ArgoCD</div><div class="stack-role">GitOps — App-of-Apps</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cilium.png" alt="Cilium" onerror="this.parentElement.innerHTML='🌐'"></div>
+              <div><div class="stack-name">Cilium</div><div class="stack-role">eBPF CNI + Hubble</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png" alt="Traefik" onerror="this.parentElement.innerHTML='🔀'"></div>
+              <div><div class="stack-name">Traefik</div><div class="stack-role">Ingress + TLS</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/longhorn.png" alt="Longhorn" onerror="this.parentElement.innerHTML='💾'"></div>
+              <div><div class="stack-name">Longhorn</div><div class="stack-role">Distributed storage</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cert-manager.png" alt="cert-manager" onerror="this.parentElement.innerHTML='🔒'"></div>
+              <div><div class="stack-name">cert-manager</div><div class="stack-role">Automated TLS certs</div></div>
+            </div>
+            <div class="stack-card">
+              <div class="stack-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cloudflare.png" alt="Cloudflared" onerror="this.parentElement.innerHTML='☁️'"></div>
+              <div><div class="stack-name">Cloudflare Tunnel</div><div class="stack-role">Zero-trust exposure</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GITOPS FLOW -->
+      <section class="flow-section">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-label">GitOps</div>
+            <h2>Everything is a Git push</h2>
+            <p class="section-desc">No manual intervention ever touches the cluster. The repo <em>is</em> the cluster state.</p>
+          </div>
+          <div class="flow-grid">
+            <div class="flow-step">
+              <div class="flow-num">01</div>
+              <div class="flow-icon">✏️</div>
+              <div class="flow-title">Edit the repo</div>
+              <div class="flow-desc">Add or modify a YAML manifest in <code style="font-family:var(--mono);font-size:0.85em;color:var(--accent2)">argocd/apps/</code>. One file per service. That's it.</div>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">02</div>
+              <div class="flow-icon">🔐</div>
+              <div class="flow-title">CI validates &amp; scans</div>
+              <div class="flow-desc">GitHub Actions runs Trivy for CVE scanning on every push and PR. Renovate opens PRs daily for new Helm chart versions.</div>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">03</div>
+              <div class="flow-icon">🔄</div>
+              <div class="flow-title">ArgoCD syncs</div>
+              <div class="flow-desc">ArgoCD polls the repo and reconciles the cluster to match the desired state — automatically pruning removed resources.</div>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-step">
+              <div class="flow-num">04</div>
+              <div class="flow-icon">✅</div>
+              <div class="flow-title">Live in minutes</div>
+              <div class="flow-desc">The new service is running, complete with Traefik ingress, a valid TLS cert from cert-manager, and Longhorn PVC if needed.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES SECTION -->
+      <section id="services">
+        <div class="section-inner">
+          <div class="section-header">
+            <div class="section-label">Services</div>
+            <h2>What's running</h2>
+            <p class="section-desc">30+ self-hosted services across 6 categories — all deployed via Helm charts through ArgoCD.</p>
+          </div>
+          <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" data-cat="all">All (30+)</button>
+            <button class="filter-btn" data-cat="platform">🌐 Platform</button>
+            <button class="filter-btn" data-cat="storage">💾 Storage</button>
+            <button class="filter-btn" data-cat="observe">📊 Observability</button>
+            <button class="filter-btn" data-cat="security">🔒 Security</button>
+            <button class="filter-btn" data-cat="mgmt">⚙️ Cluster Mgmt</button>
+            <button class="filter-btn" data-cat="apps">🚀 Apps</button>
+          </div>
+          <div class="services-grid" id="servicesGrid">
+
+            <!-- PLATFORM -->
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/argo-cd.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔄</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">ArgoCD</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">Watches this Git repo and automatically reconciles the cluster to match — using the App-of-Apps pattern for clean separation.</div>
+            </div>
+
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cilium.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🌐</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Cilium</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">eBPF-based CNI replacing kube-proxy — handles all pod networking, network policies, and exposes cluster topology via Hubble.</div>
+            </div>
+
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔀</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Traefik</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">Ingress controller and reverse proxy for all services. Every app gets its own subdomain under <code style="font-family:var(--mono);font-size:0.85em;color:var(--accent2)">atanuslab.xyz</code>.</div>
+            </div>
+
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cert-manager.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔒</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">cert-manager</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">Automatically provisions and renews TLS certificates. Set it up once and forget it exists — certs just auto-renew.</div>
+            </div>
+
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔑</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Sealed Secrets</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">Encrypts Kubernetes secrets so they can be safely committed to Git. Private key stays in-cluster; anyone can encrypt, only the cluster decrypts.</div>
+            </div>
+
+            <div class="service-card c-platform" data-cat="platform">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cloudflare.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>☁️</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Cloudflare Tunnel</div><span class="svc-cat">Platform</span></div>
+              </div>
+              <div class="svc-desc">Zero-trust tunnel exposing select services to the internet without opening firewall ports. No public IP required on the home network.</div>
+            </div>
+
+            <!-- STORAGE -->
+            <div class="service-card c-storage" data-cat="storage">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/longhorn.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>💾</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Longhorn</div><span class="svc-cat">Storage</span></div>
+              </div>
+              <div class="svc-desc">Distributed block storage for Kubernetes — replicated PersistentVolumes across nodes. Handles snapshots, backups to S3, and is browser-manageable.</div>
+            </div>
+
+            <div class="service-card c-storage" data-cat="storage">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/minio.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🪣</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">MinIO</div><span class="svc-cat">Storage</span></div>
+              </div>
+              <div class="svc-desc">S3-compatible object storage for self-hosted workloads. Used as Longhorn backup target and by services needing an S3 API.</div>
+            </div>
+
+            <!-- OBSERVABILITY -->
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/prometheus.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📈</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Prometheus Stack</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Full kube-prometheus-stack: Prometheus, Alertmanager, node exporters, kube-state-metrics. Scrapes everything in the cluster.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grafana.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📊</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Grafana</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Metrics dashboards. Pre-built boards for Kubernetes nodes, pods, Cilium, Traefik, and every service that exposes Prometheus metrics.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/loki.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📝</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Loki</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Log aggregation with label-based indexing, queried via LogQL in Grafana. Like Prometheus but for logs.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/alloy.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔭</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Grafana Alloy</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">OpenTelemetry-compatible collector that ships logs, metrics, and traces. Replaced Fluent Bit — more flexible pipeline configuration.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/opensearch.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔍</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">OpenSearch</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Full-text log search and analytics with OpenSearch Dashboards. Useful when Loki's label-based querying isn't enough for ad-hoc investigation.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/uptime-kuma.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>💚</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Uptime Kuma</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Monitors all services with HTTP/TCP/ping checks and sends alerts when something goes down. Public status page at status.atanuslab.xyz.</div>
+            </div>
+
+            <div class="service-card c-observe" data-cat="observe">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/percona.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🗄️</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">PMM</div><span class="svc-cat">Observability</span></div>
+              </div>
+              <div class="svc-desc">Percona Monitoring and Management — deep query analytics and performance metrics for PostgreSQL and MySQL workloads in the cluster.</div>
+            </div>
+
+            <!-- SECURITY -->
+            <div class="service-card c-security" data-cat="security">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/keycloak.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>👤</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Keycloak</div><span class="svc-cat">Security</span></div>
+              </div>
+              <div class="svc-desc">Central identity provider for the whole homelab — SSO with OIDC and SAML. One login for everything. Backed by a dedicated PostgreSQL instance.</div>
+            </div>
+
+            <div class="service-card c-security" data-cat="security">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/vaultwarden.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔑</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Vaultwarden</div><span class="svc-cat">Security</span></div>
+              </div>
+              <div class="svc-desc">Lightweight Bitwarden-compatible server. Self-hosted password manager — my primary password vault across all devices.</div>
+            </div>
+
+            <div class="service-card c-security" data-cat="security">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/falco.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🦅</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Falco</div><span class="svc-cat">Security</span></div>
+              </div>
+              <div class="svc-desc">Runtime security monitoring — hooks into the Linux kernel via eBPF to detect anomalous syscalls, unexpected network connections, or privilege escalations.</div>
+            </div>
+
+            <div class="service-card c-security" data-cat="security">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/trivy.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🛡️</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Trivy Operator</div><span class="svc-cat">Security</span></div>
+              </div>
+              <div class="svc-desc">Continuously scans all running container images for CVEs, secrets, and misconfigurations. Results stored as Kubernetes CRDs and checked in CI.</div>
+            </div>
+
+            <!-- CLUSTER MGMT -->
+            <div class="service-card c-mgmt" data-cat="mgmt">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/portainer.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🖥️</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Portainer</div><span class="svc-cat">Cluster Mgmt</span></div>
+              </div>
+              <div class="svc-desc">Web GUI for browsing cluster resources — useful for quick inspection without context-switching to the terminal.</div>
+            </div>
+
+            <div class="service-card c-mgmt" data-cat="mgmt">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>⚖️</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Goldilocks</div><span class="svc-cat">Cluster Mgmt</span></div>
+              </div>
+              <div class="svc-desc">Wraps the Vertical Pod Autoscaler to give actionable CPU/memory right-sizing recommendations per deployment — so nothing is over-provisioned.</div>
+            </div>
+
+            <div class="service-card c-mgmt" data-cat="mgmt">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔄</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Descheduler</div><span class="svc-cat">Cluster Mgmt</span></div>
+              </div>
+              <div class="svc-desc">Evicts and reschedules pods when nodes become unbalanced — ensuring even workload distribution that the default scheduler misses over time.</div>
+            </div>
+
+            <div class="service-card c-mgmt" data-cat="mgmt">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kubernetes.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📏</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Metrics Server</div><span class="svc-cat">Cluster Mgmt</span></div>
+              </div>
+              <div class="svc-desc">Aggregates real-time CPU/memory from kubelets. Required for <code style="font-family:var(--mono);font-size:0.85em;color:var(--accent2)">kubectl top</code> and HPA scaling decisions.</div>
+            </div>
+
+            <div class="service-card c-mgmt" data-cat="mgmt">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/renovate.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🤖</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Renovate</div><span class="svc-cat">Cluster Mgmt</span></div>
+              </div>
+              <div class="svc-desc">Runs in GitHub Actions daily and opens PRs whenever a Helm chart has a new version. Keeps the whole stack up-to-date with zero manual effort.</div>
+            </div>
+
+            <!-- APPS -->
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/gitea.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🐙</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Gitea</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Self-hosted Git server at git.atanuslab.xyz — mirrors my GitHub repos locally and serves as a private remote for certain projects.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/jellyfin.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🎬</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Jellyfin</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Open-source media server — streams my movie and TV collection to any device on the network. Hardware transcoding enabled.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/karakeep.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🔖</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">KaraKeep</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Bookmark manager that saves full-page snapshots and makes them searchable. Replaces the browser bookmarks I never organised.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kanboard.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📋</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Kanboard</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Minimalist Kanban board for personal project management. Deployed from the Bjw-s app-template Helm chart.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homepage.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🏠</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Homepage</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Main internal dashboard showing live status of all services. Configured entirely via YAML in the Helm values.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homarr.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>📱</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Homarr</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Alternative to Homepage — more visual and widget-based. Running both while I decide which I prefer; encrypted DB via Sealed Secret.</div>
+            </div>
+
+            <div class="service-card c-apps" data-cat="apps">
+              <div class="card-top">
+                <div class="svc-icon"><img src="https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/minecraft.png" alt="" onerror="this.parentElement.innerHTML='<span class=fallback>🎮</span>'"></div>
+                <div class="svc-meta"><div class="svc-name">Minecraft Server</div><span class="svc-cat">Apps</span></div>
+              </div>
+              <div class="svc-desc">Self-hosted Minecraft server with custom configuration and persistent world storage on Longhorn. For occasional play with friends.</div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer>
+        <div class="footer-inner">
+          <div class="footer-left">
+            Built by <strong>Atanu Biswas</strong> — 
+            bare-metal Kubernetes homelab, fully open source.
+          </div>
+          <div class="footer-links">
+            <a href="https://github.com/Atanu484/atanus-homelab" target="_blank" rel="noopener">GitHub Repo ↗</a>
+            <a href="https://status.atanuslab.xyz" target="_blank" rel="noopener">Status Page ↗</a>
+          </div>
+        </div>
+      </footer>
+
+      <script>
+        // Category filter
+        document.querySelectorAll('.filter-btn').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            var cat = btn.getAttribute('data-cat');
+            document.querySelectorAll('.service-card').forEach(function(card) {
+              if (cat === 'all' || card.getAttribute('data-cat') === cat) {
+                card.classList.remove('hidden');
+              } else {
+                card.classList.add('hidden');
+              }
+            });
+          });
+        });
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+          a.addEventListener('click', function(e) {
+            var target = document.querySelector(a.getAttribute('href'));
+            if (target) {
+              e.preventDefault();
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          });
+        });
+
+        // Animate terminal lines in on load
+        var lines = document.querySelectorAll('.t-line:not(.t-header)');
+        lines.forEach(function(line, i) {
+          line.style.opacity = '0';
+          line.style.transform = 'translateX(-8px)';
+          setTimeout(function() {
+            line.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            line.style.opacity = '1';
+            line.style.transform = 'translateX(0)';
+          }, 300 + i * 80);
+        });
+      </script>
+    </body>
+    </html>
