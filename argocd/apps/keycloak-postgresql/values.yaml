@@ -1,0 +1,15 @@
+auth:
+  username: keycloak
+  password: "CHANGE-ME-DB-PASSWORD"
+  database: keycloak
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 3Gi
+
+image:
+  registry: docker.io
+  repository: bitnamilegacy/postgresql
+  tag: "16.6.0"

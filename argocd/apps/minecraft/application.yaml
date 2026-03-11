@@ -5,46 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://itzg.github.io/minecraft-server-charts/
-    chart: minecraft
-    targetRevision: 5.1.2
-    helm:
-      releaseName: minecraft
-      values: |
-        minecraftServer:
-          eula: "TRUE"
-          version: "LATEST"
-          type: VANILLA
-          difficulty: easy
-          gameMode: survival
-          motd: "Atanu's Homelab - Welcome!"
-          maxPlayers: 10
-          onlineMode: false
-          pvp: false
-          viewDistance: 10
-          spawnProtection: 0
-          serviceType: NodePort
-          nodePort: 30565
-
-        resources:
-          requests:
-            memory: 1Gi
-            cpu: 500m
-          limits:
-            memory: 2Gi
-            cpu: 2000m
-
-        persistence:
-          storageClass: longhorn
-          dataDir:
-            enabled: true
-            Size: 10Gi
-
-        dnsConfig:
-          options:
-            - name: ndots
-              value: "1"
+  sources:
+    - repoURL: https://itzg.github.io/minecraft-server-charts/
+      chart: minecraft
+      targetRevision: 5.1.2
+      helm:
+        releaseName: minecraft
+        valueFiles:
+          - $values/argocd/apps/minecraft/values.yaml
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: minecraft

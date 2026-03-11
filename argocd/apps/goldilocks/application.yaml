@@ -11,21 +11,14 @@ spec:
       targetRevision: 10.3.0
       helm:
         releaseName: goldilocks
-        values: |
-          controller:
-            flags:
-              on-by-default: true
-          dashboard:
-            flags:
-              on-by-default: true
-            service:
-              type: ClusterIP
-              port: 80
+        valueFiles:
+          - $values/argocd/apps/goldilocks/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/goldilocks
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: goldilocks

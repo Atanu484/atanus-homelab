@@ -1,0 +1,52 @@
+replicaCount: 1
+
+service:
+  http:
+    type: NodePort
+    nodePort: 31080
+  ssh:
+    type: NodePort
+    nodePort: 30222
+
+persistence:
+  enabled: true
+  storageClass: longhorn
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+
+postgresql-ha:
+  enabled: false
+
+postgresql:
+  enabled: true
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: "16.6.0"
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 10Gi
+
+valkey-cluster:
+  enabled: false
+
+gitea:
+  admin:
+    username: admin
+    password: "CHANGE-ME-TO-A-STRONG-PASSWORD"
+    email: admin@example.com
+
+  config:
+    database:
+      DB_TYPE: postgres
+      HOST: gitea-postgresql:5432
+      NAME: gitea
+      USER: gitea
+    cache:
+      ADAPTER: memory
+    session:
+      PROVIDER: memory
+    queue:
+      TYPE: level

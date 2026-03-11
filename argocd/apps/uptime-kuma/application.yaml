@@ -11,21 +11,14 @@ spec:
       targetRevision: 3.0.0
       helm:
         releaseName: uptime-kuma
-        values: |
-          service:
-            type: NodePort
-          ports:
-            http:
-              nodePort: 30960
-
-          persistentVolumeClaim:
-            create: true
-            size: 5Gi
+        valueFiles:
+          - $values/argocd/apps/uptime-kuma/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/uptime-kuma
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

@@ -1,0 +1,8 @@
+alloy:
+  configMap:
+    create: true
+controller:
+  type: daemonset
+service:
+  type: NodePort
+  nodePort: 31220

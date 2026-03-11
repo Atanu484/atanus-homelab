@@ -1,0 +1,23 @@
+driver:
+  kind: modern_ebpf
+  loader:
+    enabled: false
+
+falcoctl:
+  artifact:
+    install:
+      enabled: false
+    follow:
+      enabled: false
+
+falco:
+  config_files: []
+
+falcosidekick:
+  enabled: true
+  webui:
+    enabled: true
+    user: "admin:CHANGE-ME-STRONG-PASSWORD"
+    service:
+      type: NodePort
+      nodePort: 31020

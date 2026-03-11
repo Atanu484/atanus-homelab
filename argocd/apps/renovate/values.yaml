@@ -1,0 +1,18 @@
+envFrom:
+  - secretRef:
+      name: renovate-secrets
+
+renovate:
+  config: |
+    {
+      "platform": "github",
+      "endpoint": "https://api.github.com/",
+      "repositories": ["Atanu484/atanus-homelab"],
+      "extends": ["config:recommended"],
+      "dependencyDashboard": true
+    }
+
+cronjob:
+  schedule: "0 0 * * *"
+  concurrencyPolicy: Forbid
+  suspend: true

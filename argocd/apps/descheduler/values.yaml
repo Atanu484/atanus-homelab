@@ -1,0 +1,35 @@
+kind: Deployment
+
+schedule: "*/1 * * * *"
+
+deschedulerPolicy:
+  apiVersion: "descheduler/v1alpha2"
+  kind: "DeschedulerPolicy"
+  profiles:
+    - name: default
+      pluginConfig:
+        - name: LowNodeUtilization
+          args:
+            thresholds:
+              cpu: 20
+              memory: 20
+              pods: 20
+            targetThresholds:
+              cpu: 50
+              memory: 50
+              pods: 50
+      plugins:
+        balance:
+          enabled:
+            - LowNodeUtilization
+
+podDisruptionBudget:
+  enabled: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi

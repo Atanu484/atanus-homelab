@@ -1,0 +1,4 @@
+targetNamespaces: ""
+excludeNamespaces: "kube-system,trivy-system,kube-public"
+trivy:
+  ignoreUnfixed: true

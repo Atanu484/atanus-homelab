@@ -1,0 +1,31 @@
+mode: standalone
+replicas: 1
+
+deploymentUpdate:
+  type: RollingUpdate
+  maxUnavailable: 1
+  maxSurge: 0
+
+rootUser: minioadmin
+rootPassword: minioadmin123
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+  limits:
+    memory: 1Gi
+
+persistence:
+  enabled: true
+  size: 5Gi
+  accessMode: ReadWriteOnce
+  storageClass: longhorn
+
+service:
+  type: NodePort
+  nodePort: 30950
+
+consoleService:
+  type: NodePort
+  nodePort: 30951

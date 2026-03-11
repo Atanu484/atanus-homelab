@@ -11,43 +11,14 @@ spec:
       targetRevision: 5.4.0
       helm:
         releaseName: minio
-        values: |
-          mode: standalone
-          replicas: 1
-
-          deploymentUpdate:
-            type: RollingUpdate
-            maxUnavailable: 1
-            maxSurge: 0
-
-          rootUser: minioadmin
-          rootPassword: minioadmin123
-
-          resources:
-            requests:
-              memory: 256Mi
-              cpu: 100m
-            limits:
-              memory: 1Gi
-
-          persistence:
-            enabled: true
-            size: 5Gi
-            accessMode: ReadWriteOnce
-            storageClass: longhorn
-
-          service:
-            type: NodePort
-            nodePort: 30950
-
-          consoleService:
-            type: NodePort
-            nodePort: 30951
+        valueFiles:
+          - $values/argocd/apps/minio/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/minio
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: storage

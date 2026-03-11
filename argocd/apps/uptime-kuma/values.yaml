@@ -1,0 +1,9 @@
+service:
+  type: NodePort
+ports:
+  http:
+    nodePort: 30960
+
+persistentVolumeClaim:
+  create: true
+  size: 5Gi

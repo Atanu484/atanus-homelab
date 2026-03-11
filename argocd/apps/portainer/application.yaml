@@ -11,21 +11,14 @@ spec:
       targetRevision: 239.0.2
       helm:
         releaseName: portainer
-        values: |
-          service:
-            type: NodePort
-            nodePort: 31070
-          tls:
-            force: false
-          persistence:
-            enabled: true
-            storageClass: longhorn
-            size: 5Gi
+        valueFiles:
+          - $values/argocd/apps/portainer/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/portainer
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: portainer

@@ -5,16 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://kubernetes-sigs.github.io/metrics-server/
-    chart: metrics-server
-    targetRevision: 3.13.0
-    helm:
-      releaseName: metrics-server
-      values: |
-        args:
-          - --kubelet-insecure-tls
-          - --kubelet-preferred-address-types=InternalIP
+  sources:
+    - repoURL: https://kubernetes-sigs.github.io/metrics-server/
+      chart: metrics-server
+      targetRevision: 3.13.0
+      helm:
+        releaseName: metrics-server
+        valueFiles:
+          - $values/argocd/apps/metrics-server/values.yaml
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

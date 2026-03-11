@@ -5,55 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://opensearch-project.github.io/helm-charts
-    chart: opensearch
-    targetRevision: 3.5.0
-    helm:
-      releaseName: opensearch
-      values: |
-        affinity:
-          nodeAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-              nodeSelectorTerms:
-                - matchExpressions:
-                    - key: node-role.kubernetes.io/control-plane
-                      operator: DoesNotExist
-
-        singleNode: true
-        replicas: 1
-
-        protocol: http
-
-        config:
-          opensearch.yml: |
-            cluster.name: opensearch-cluster
-            network.host: 0.0.0.0
-            discovery.type: single-node
-            plugins.security.disabled: true
-
-        extraEnvs:
-          - name: DISABLE_INSTALL_DEMO_CONFIG
-            value: "true"
-          - name: DISABLE_SECURITY_PLUGIN
-            value: "true"
-
-        opensearchJavaOpts: "-Xms256m -Xmx1024m"
-
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "512Mi"
-          limits:
-            cpu: "1000m"
-            memory: "2Gi"
-
-        persistence:
-          enabled: true
-          storageClass: longhorn
-          accessModes:
-            - ReadWriteOnce
-          size: 10Gi
+  sources:
+    - repoURL: https://opensearch-project.github.io/helm-charts
+      chart: opensearch
+      targetRevision: 3.5.0
+      helm:
+        releaseName: opensearch
+        valueFiles:
+          - $values/argocd/apps/opensearch/values.yaml
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

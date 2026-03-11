@@ -1,0 +1,27 @@
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: glanceapp/glance
+          tag: latest
+        ports:
+          - name: http
+            containerPort: 8080
+
+service:
+  main:
+    controller: main
+    type: NodePort
+    ports:
+      http:
+        port: 8080
+        nodePort: 31030
+
+persistence:
+  config:
+    enabled: true
+    type: persistentVolumeClaim
+    existingClaim: glance
+    globalMounts:
+      - path: /app/config

@@ -11,50 +11,14 @@ spec:
       targetRevision: 39.0.5
       helm:
         releaseName: traefik
-        values: |
-          service:
-            type: NodePort
-            spec:
-              externalTrafficPolicy: Cluster
-
-          ports:
-            web:
-              port: 8000
-              expose:
-                default: true
-              exposedPort: 80
-              protocol: TCP
-              nodePort: 31180
-
-            websecure:
-              port: 8443
-              expose:
-                default: true
-              exposedPort: 443
-              protocol: TCP
-              nodePort: 31443
-
-            traefik:
-              port: 9000
-              expose:
-                default: true
-              exposedPort: 9000
-              protocol: TCP
-              nodePort: 31901
-
-          api:
-            dashboard: true
-            insecure: true
-
-          additionalArguments:
-            - "--providers.kubernetescrd=true"
-            - "--providers.kubernetesingress=true"
-            - "--providers.kubernetesCRD.allowCrossNamespace=true"
+        valueFiles:
+          - $values/argocd/apps/traefik/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/traefik
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik

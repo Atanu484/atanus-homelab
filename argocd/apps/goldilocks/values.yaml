@@ -1,0 +1,9 @@
+controller:
+  flags:
+    on-by-default: true
+dashboard:
+  flags:
+    on-by-default: true
+  service:
+    type: ClusterIP
+    port: 80

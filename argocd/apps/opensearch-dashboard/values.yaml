@@ -1,0 +1,36 @@
+opensearchHosts: "http://opensearch-cluster-master:9200"
+
+config:
+  opensearch_dashboards.yml: |
+    server.host: "0.0.0.0"
+    server.port: 5601
+    opensearch.hosts: ["http://opensearch-cluster-master:9200"]
+    opensearch_security.enabled: false
+
+startupProbe:
+  tcpSocket:
+    port: 5601
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 60
+
+readinessProbe:
+  tcpSocket:
+    port: 5601
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 12
+
+livenessProbe:
+  tcpSocket:
+    port: 5601
+  initialDelaySeconds: 60
+  periodSeconds: 20
+  timeoutSeconds: 5
+  failureThreshold: 6
+
+service:
+  type: NodePort
+  nodePort: 31240

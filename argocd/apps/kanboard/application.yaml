@@ -11,40 +11,14 @@ spec:
       targetRevision: 4.6.2
       helm:
         releaseName: kanboard
-        values: |
-          controllers:
-            main:
-              containers:
-                main:
-                  image:
-                    repository: kanboard/kanboard
-                    tag: latest
-                  ports:
-                    - name: http
-                      containerPort: 80
-
-          service:
-            main:
-              controller: main
-              type: NodePort
-              ports:
-                http:
-                  port: 80
-                  nodePort: 31250
-
-          persistence:
-            data:
-              type: persistentVolumeClaim
-              storageClass: longhorn
-              accessMode: ReadWriteOnce
-              size: 5Gi
-              globalMounts:
-                - path: /var/www/app/data
+        valueFiles:
+          - $values/argocd/apps/kanboard/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/kanboard
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: productivity

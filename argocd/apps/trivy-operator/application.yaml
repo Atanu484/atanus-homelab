@@ -5,17 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://aquasecurity.github.io/helm-charts
-    chart: trivy-operator
-    targetRevision: 0.31.0
-    helm:
-      releaseName: trivy-operator
-      values: |
-        targetNamespaces: ""
-        excludeNamespaces: "kube-system,trivy-system,kube-public"
-        trivy:
-          ignoreUnfixed: true
+  sources:
+    - repoURL: https://aquasecurity.github.io/helm-charts
+      chart: trivy-operator
+      targetRevision: 0.31.0
+      helm:
+        releaseName: trivy-operator
+        valueFiles:
+          - $values/argocd/apps/trivy-operator/values.yaml
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: trivy-system

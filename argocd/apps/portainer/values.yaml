@@ -1,0 +1,9 @@
+service:
+  type: NodePort
+  nodePort: 31070
+tls:
+  force: false
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 5Gi

@@ -5,28 +5,17 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://charts.bitnami.com/bitnami
-    chart: postgresql
-    targetRevision: "15.5.0"
-    helm:
-      releaseName: keycloak-db
-      values: |
-        auth:
-          username: keycloak
-          password: "CHANGE-ME-DB-PASSWORD"
-          database: keycloak
-
-        primary:
-          persistence:
-            enabled: true
-            storageClass: longhorn
-            size: 3Gi
-
-        image:
-          registry: docker.io
-          repository: bitnamilegacy/postgresql
-          tag: "16.6.0"
+  sources:
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql
+      targetRevision: "15.5.0"
+      helm:
+        releaseName: keycloak-db
+        valueFiles:
+          - $values/argocd/apps/keycloak-postgresql/values.yaml
+    - repoURL: https://github.com/Atanu484/atanus-homelab.git
+      targetRevision: master
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: iam

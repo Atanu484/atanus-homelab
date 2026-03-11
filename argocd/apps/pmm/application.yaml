@@ -11,38 +11,14 @@ spec:
       targetRevision: 1.5.1
       helm:
         releaseName: pmm
-        values: |
-          secret:
-            create: false
-          pmmResources:
-            requests:
-              memory: "2Gi"
-              cpu: "500m"
-            limits:
-              memory: "4Gi"
-          startupProbeConf:
-            failureThreshold: 60
-            periodSeconds: 15
-          service:
-            type: NodePort
-            ports:
-              - port: 443
-                targetPort: https
-                protocol: TCP
-                name: https
-                nodePort: 30970
-              - port: 80
-                targetPort: http
-                protocol: TCP
-                name: http
-                nodePort: 30971
-          # storage.size intentionally not set: StatefulSet volumeClaimTemplates
-          # are immutable; existing PVC is 10Gi. Overriding would break ArgoCD sync.
+        valueFiles:
+          - $values/argocd/apps/pmm/values.yaml
     - repoURL: https://github.com/Atanu484/atanus-homelab.git
       targetRevision: master
+      ref: values
       path: argocd/apps/pmm
       directory:
-        exclude: 'application.yaml'
+        exclude: '{application.yaml,values.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
