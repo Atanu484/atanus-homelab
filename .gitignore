@@ -1,0 +1,9 @@
+talosconfig
+worker.yaml
+controlplane.yaml
+coredns.yaml
+node.yaml
+cilium-values.yaml
+.idea
+.ai
+temp/
