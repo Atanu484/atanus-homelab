@@ -6,12 +6,16 @@ server:
     nodePortHttps: 30111
 repoServer:
   replicaCount: 1
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
 controller:
   replicaCount: 1
 
 # Redis: use Redis HA with Longhorn persistence (like rest of apps)
 redis-ha:
-  enabled: true
+  enabled: false
   replicas: 1
   persistentVolume:
     enabled: true
@@ -20,6 +24,9 @@ redis-ha:
   redis:
     config:
       min-replicas-to-write: 0
+
+redis:
+  enabled: true
 
 # --- Exported from your manual config (GitOps source of truth) ---
 configs:
