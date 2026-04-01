@@ -2,7 +2,7 @@ replicas: 1
 
 image:
   repository: quay.io/keycloak/keycloak
-  tag: "26.5.5"
+  tag: "26.5.6"
   pullPolicy: IfNotPresent
 
 command:
