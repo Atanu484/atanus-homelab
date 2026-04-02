@@ -1,6 +1,6 @@
 image:
   repository: docker.io/jellyfin/jellyfin
-  tag: "10.9.11"
+  tag: "10.11.7"
   pullPolicy: IfNotPresent
 
 deploymentStrategy:
